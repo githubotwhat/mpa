@@ -17,6 +17,40 @@
       transition: background 0.3s ease;
     }
     
+    /* PANTALLA DE INTRODUCCIÓN (SPLASH SCREEN) */
+    #splashScreen {
+      position: fixed;
+      top: 0; left: 0; width: 100vw; height: 100vh;
+      background-color: #1b3a4b;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+      transition: opacity 0.3s ease, visibility 0.3s ease;
+    }
+    #splashScreen img {
+      width: 120px;
+      height: auto;
+      margin-bottom: 12px;
+      animation: zoomIn 0.5s ease-out;
+    }
+    #splashScreen h2 {
+      color: #ffffff;
+      font-size: 1.2rem;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+    }
+    #splashScreen.hidden {
+      opacity: 0;
+      visibility: hidden;
+    }
+
+    @keyframes zoomIn {
+      from { transform: scale(0.6); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
+    }
+
     .app-header {
       position: sticky; top: 0; z-index: 100;
       background: linear-gradient(135deg, #1b3a4b, #006494);
@@ -137,6 +171,12 @@
   </style>
 </head>
 <body>
+
+  <!-- PANTALLA INTRO (SPLASH) -->
+  <div id="splashScreen">
+    <img src="input_file_0.png" alt="MPA Logo">
+    <h2>MPA Registro Móvil</h2>
+  </div>
 
   <div class="app-header">
     <div class="header-title">
@@ -272,7 +312,6 @@
   </div>
 
   <script>
-    // ⚠️ REEMPLAZA ESTA URL CON LA URL DE TU APLICACIÓN WEB PUBLICADA EN GOOGLE APPS SCRIPT
     const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbyFcZaZ3Ia5raGcWJcMfORu9UlzXq9t_IaKl6CNndrkjIWsUwnSpGxdoTsmcAPzdO7AFg/exec";
 
     let listaGlobal = [];
@@ -281,6 +320,12 @@
     let pinGuardado = "";
 
     window.onload = function() {
+      // Ocultar pantalla intro después de 1 segundo (1000 ms)
+      setTimeout(() => {
+        const splash = document.getElementById('splashScreen');
+        splash.classList.add('hidden');
+      }, 1000);
+
       calcularSemanaOperativa();
       cargarDatos();
       cargarFondoGuardado();
@@ -292,7 +337,7 @@
       const difTiempo = hoy.getTime() - baseFecha.getTime();
       const difSemanas = Math.floor(difTiempo / (1000 * 60 * 60 * 24 * 7));
       
-      let numSemana = 12 + difSemanas;
+      let numSemana = 13 + difSemanas;
       if (numSemana < 1) numSemana = 1;
 
       document.getElementById('txtSemanaOperativa').innerText = `Semana Actual: #${numSemana}`;
