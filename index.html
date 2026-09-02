@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>MPA Registro Móvil</title>
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
     * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; margin: 0; padding: 0; font-family: 'Roboto', sans-serif; }
     body { 
@@ -59,7 +60,7 @@
       border-bottom-left-radius: 16px; border-bottom-right-radius: 16px;
       display: flex; justify-content: space-between; align-items: center;
     }
-    .header-title h1 { font-size: 1.1rem; font-weight: 700; text-align: left; }
+    .header-title h2 { font-size: 1.1rem; font-weight: 700; text-align: left; }
     .header-title p { font-size: 0.72rem; opacity: 0.85; margin-top: 2px; text-align: left; }
     
     .admin-btn {
@@ -141,6 +142,27 @@
     .dash-card .num { font-size: 1.3rem; font-weight: 700; color: #1b3a4b; }
     .dash-card .txt { font-size: 0.72rem; color: #64748b; }
 
+    /* Estilos para contenedores de Gráficas */
+    .charts-container {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+    .chart-box {
+      background: #fff;
+      border: 1px solid #e2e8f0;
+      border-radius: 10px;
+      padding: 12px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+    }
+    .chart-box h4 {
+      font-size: 0.8rem;
+      color: #1b3a4b;
+      margin-bottom: 8px;
+      text-align: center;
+    }
+
     details { background: #fff; border: 1px solid #cbd5e1; border-radius: 8px; padding: 8px 12px; margin-bottom: 8px; }
     summary { font-size: 0.85rem; font-weight: 600; cursor: pointer; color: #1b3a4b; outline: none; }
     
@@ -168,11 +190,53 @@
     .empty-msg { text-align: center; padding: 40px 20px; color: #94a3b8; font-size: 0.9rem; }
     .loader { text-align: center; padding: 40px 0; color: #006494; font-weight: 500; }
     .error-msg { text-align: center; padding: 20px; color: #e63946; font-weight: 500; background: #fff5f5; border-radius: 10px; margin: 20px; }
+
+    /* NOTIFICACIÓN TOAST PERSONALIZADA */
+    #toastContainer {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 10000;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      pointer-events: none;
+    }
+    .toast {
+      background: #1b3a4b;
+      color: #fff;
+      padding: 12px 20px;
+      border-radius: 25px;
+      font-size: 0.85rem;
+      font-weight: 500;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+      opacity: 0;
+      transform: translateY(20px);
+      transition: all 0.3s ease;
+      text-align: center;
+    }
+    .toast.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    .toast.success { background: #2a9d8f; }
+    .toast.error { background: #e63946; }
+
+    /* MODAL DE LOGIN ADMIN PERSONALIZADO */
+    .admin-modal-content {
+      background: #fff;
+      border-radius: 16px;
+      padding: 20px;
+      width: 85%;
+      max-width: 320px;
+      margin: auto;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+    }
   </style>
 </head>
 <body>
 
-  <!-- PANTALLA INTRO (SPLASH) -->
   <div id="splashScreen">
     <img src="tractor.png" alt="MPA Logo">
     <h2>MPA Registro Móvil</h2>
@@ -205,6 +269,17 @@
         <div class="dash-card" style="border-color: #e63946;"><div class="num" id="dashPend">0</div><div class="txt">Con Pendientes</div></div>
         <div class="dash-card" style="border-color: #f59e0b;"><div class="num" id="dashEnMPA">0</div><div class="txt">En MPA 🛠️</div></div>
         <div class="dash-card" style="border-color: #2a9d8f;"><div class="num" id="dashComp">0</div><div class="txt">Completados</div></div>
+      </div>
+
+      <div class="charts-container">
+        <div class="chart-box">
+          <h4>Distribución por Estado</h4>
+          <canvas id="chartEstados" height="160"></canvas>
+        </div>
+        <div class="chart-box">
+          <h4>Métricas de Hallazgos</h4>
+          <canvas id="chartHallazgos" height="160"></canvas>
+        </div>
       </div>
 
       <details>
@@ -244,7 +319,6 @@
     <div class="loader">Cargando datos del registro...</div>
   </div>
 
-  <!-- Modal Detalle / Edición -->
   <div class="modal-overlay" id="modalOverlay" onclick="cerrarModal(event)">
     <div class="modal-content" onclick="event.stopPropagation()">
       <div class="modal-header">
@@ -255,7 +329,6 @@
         <button class="close-btn" onclick="cerrarModalDirecto()">&times;</button>
       </div>
 
-      <!-- VISTA SOLO LECTURA -->
       <div id="vistaLectura">
         <div class="modal-section">
           <div class="modal-section-title">Resumen de Fallas</div>
@@ -273,7 +346,6 @@
         </div>
       </div>
 
-      <!-- VISTA MODO ADMIN -->
       <div id="vistaAdmin" style="display: none;">
         <input type="hidden" id="editFilaHoja">
         <input type="hidden" id="editIdMaquinaria">
@@ -311,6 +383,24 @@
     </div>
   </div>
 
+  <div class="modal-overlay" id="modalLoginAdmin" style="justify-content: center; align-items: center;">
+    <div class="admin-modal-content">
+      <h3 style="font-size: 1.1rem; color: #1b3a4b; margin-bottom: 8px; text-align: center;">Acceso Administrador</h3>
+      <p style="font-size: 0.8rem; color: #64748b; margin-bottom: 14px; text-align: center;">Ingresa la clave PIN para continuar</p>
+      
+      <div class="form-group">
+        <input type="password" id="inputPinAdmin" placeholder="PIN de acceso" style="text-align: center; font-size: 1.1rem; letter-spacing: 2px;">
+      </div>
+
+      <div style="display: flex; gap: 8px; margin-top: 12px;">
+        <button class="btn-secondary" style="flex: 1;" onclick="cerrarModalLoginAdmin()">Cancelar</button>
+        <button class="btn-save" style="flex: 1; margin-top: 0; padding: 10px;" onclick="procesarLoginAdmin()">Ingresar</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="toastContainer"></div>
+
   <script>
     const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbyFcZaZ3Ia5raGcWJcMfORu9UlzXq9t_IaKl6CNndrkjIWsUwnSpGxdoTsmcAPzdO7AFg/exec";
 
@@ -319,8 +409,12 @@
     let esAdmin = false;
     let pinGuardado = "";
 
+    // Variables de instancias de gráficas
+    let chartEstadosInstance = null;
+    let chartHallazgosInstance = null;
+
     window.onload = function() {
-      // Ocultar pantalla intro después de 1 segundo (1000 ms)
+      // Ocultar pantalla intro después de 1 segundo
       setTimeout(() => {
         const splash = document.getElementById('splashScreen');
         splash.classList.add('hidden');
@@ -330,6 +424,22 @@
       cargarDatos();
       cargarFondoGuardado();
     };
+
+    // FUNCIÓN DE NOTIFICACIONES TOAST EN LUGAR DE ALERT
+    function showToast(mensaje, tipo = 'info') {
+      const container = document.getElementById('toastContainer');
+      const toast = document.createElement('div');
+      toast.className = `toast ${tipo}`;
+      toast.innerText = mensaje;
+      container.appendChild(toast);
+
+      setTimeout(() => toast.classList.add('show'), 10);
+
+      setTimeout(() => {
+        toast.classList.remove('show');
+        setTimeout(() => toast.remove(), 300);
+      }, 3000);
+    }
 
     function calcularSemanaOperativa() {
       const hoy = new Date();
@@ -370,28 +480,8 @@
 
     function toggleAdminMode() {
       if (!esAdmin) {
-        const pin = prompt("🔐 Ingresa la clave de Administrador:");
-        if (!pin) return;
-        
-        fetch(`${WEB_APP_URL}?action=verificarPin&pin=${encodeURIComponent(pin)}`)
-          .then(res => res.json())
-          .then(esCorrecto => {
-            if (esCorrecto) {
-              esAdmin = true;
-              pinGuardado = pin;
-              document.getElementById('btnAdmin').classList.add('active');
-              document.getElementById('adminIcon').innerText = '🔓';
-              document.getElementById('adminTxt').innerText = 'Admin Activo';
-              document.getElementById('panelDashboardAdmin').style.display = 'block';
-              
-              actualizarDashboard();
-              cargarHistorial();
-              alert("✅ Modo Administrador Activado.");
-            } else {
-              alert("❌ PIN Incorrecto.");
-            }
-          })
-          .catch(err => alert("Error al verificar PIN: " + err.message));
+        document.getElementById('inputPinAdmin').value = '';
+        document.getElementById('modalLoginAdmin').classList.add('active');
       } else {
         esAdmin = false;
         pinGuardado = "";
@@ -399,8 +489,41 @@
         document.getElementById('adminIcon').innerText = '🔒';
         document.getElementById('adminTxt').innerText = 'Admin';
         document.getElementById('panelDashboardAdmin').style.display = 'none';
-        alert("🔒 Modo Administrador Desactivado.");
+        showToast("Modo Administrador Desactivado.");
       }
+    }
+
+    function cerrarModalLoginAdmin() {
+      document.getElementById('modalLoginAdmin').classList.remove('active');
+    }
+
+    function procesarLoginAdmin() {
+      const pin = document.getElementById('inputPinAdmin').value;
+      if (!pin) {
+        showToast("Ingresa un PIN válido", "error");
+        return;
+      }
+
+      fetch(`${WEB_APP_URL}?action=verificarPin&pin=${encodeURIComponent(pin)}`)
+        .then(res => res.json())
+        .then(esCorrecto => {
+          if (esCorrecto) {
+            esAdmin = true;
+            pinGuardado = pin;
+            cerrarModalLoginAdmin();
+            document.getElementById('btnAdmin').classList.add('active');
+            document.getElementById('adminIcon').innerText = '🔓';
+            document.getElementById('adminTxt').innerText = 'Admin Activo';
+            document.getElementById('panelDashboardAdmin').style.display = 'block';
+            
+            actualizarDashboard();
+            cargarHistorial();
+            showToast("Modo Administrador Activado", "success");
+          } else {
+            showToast("PIN Incorrecto", "error");
+          }
+        })
+        .catch(err => showToast("Error al verificar PIN: " + err.message, "error"));
     }
 
     function actualizarDashboard() {
@@ -409,16 +532,69 @@
       let enMpa = 0;
       let comp = 0;
 
+      let totalEncontrados = 0;
+      let totalReparados = 0;
+
       listaGlobal.forEach(i => {
         if (i.enEspera > 0) conPend++;
         if (i.estado.includes('EN MPA')) enMpa++;
         if (i.estado.includes('COMPLETADO')) comp++;
+
+        totalEncontrados += Number(i.fallasEnc) || 0;
+        totalReparados += Number(i.fallasRep) || 0;
       });
 
       document.getElementById('dashTotal').innerText = total;
       document.getElementById('dashPend').innerText = conPend;
       document.getElementById('dashEnMPA').innerText = enMpa;
       document.getElementById('dashComp').innerText = comp;
+
+      renderizarGraficas(conPend, enMpa, comp, totalEncontrados, totalReparados);
+    }
+
+    // GENERAR/ACTUALIZAR GRÁFICAS DE CHART.JS
+    function renderizarGraficas(conPend, enMpa, comp, encontrados, reparados) {
+      // 1. Gráfica de Dona (Estados)
+      const ctxEstados = document.getElementById('chartEstados').getContext('2d');
+      if (chartEstadosInstance) chartEstadosInstance.destroy();
+
+      chartEstadosInstance = new Chart(ctxEstados, {
+        type: 'doughnut',
+        data: {
+          labels: ['Con Pendientes', 'En MPA', 'Completados'],
+          datasets: [{
+            data: [conPend, enMpa, comp],
+            backgroundColor: ['#e63946', '#f59e0b', '#2a9d8f']
+          }]
+        },
+        options: {
+          responsive: true,
+          plugins: {
+            legend: { position: 'bottom', labels: { boxWidth: 12, font: { size: 10 } } }
+          }
+        }
+      });
+
+      // 2. Gráfica de Barras (Hallazgos Encontrados vs Reparados)
+      const ctxHallazgos = document.getElementById('chartHallazgos').getContext('2d');
+      if (chartHallazgosInstance) chartHallazgosInstance.destroy();
+
+      chartHallazgosInstance = new Chart(ctxHallazgos, {
+        type: 'bar',
+        data: {
+          labels: ['Hallazgos Total', 'Reparados'],
+          datasets: [{
+            data: [encontrados, reparados],
+            backgroundColor: ['#006494', '#2a9d8f'],
+            borderRadius: 6
+          }]
+        },
+        options: {
+          responsive: true,
+          plugins: { legend: { display: false } },
+          scales: { y: { beginAtZero: true } }
+        }
+      });
     }
 
     function cargarHistorial() {
@@ -444,7 +620,7 @@
     function subirFotoFondo() {
       const fileInput = document.getElementById('inputBgFile');
       if (!fileInput.files || !fileInput.files[0]) {
-        alert("Por favor selecciona una imagen primero.");
+        showToast("Selecciona una imagen primero", "error");
         return;
       }
       const file = fileInput.files[0];
@@ -456,7 +632,7 @@
         fetch(WEB_APP_URL, {
           method: 'POST',
           body: JSON.stringify({ action: 'guardarImagenFondo', bg: base64 })
-        }).then(() => alert("🖼️ Foto de fondo aplicada correctamente."));
+        }).then(() => showToast("Foto de fondo aplicada", "success"));
       };
       reader.readAsDataURL(file);
     }
@@ -466,7 +642,7 @@
       fetch(WEB_APP_URL, {
         method: 'POST',
         body: JSON.stringify({ action: 'guardarImagenFondo', bg: '' })
-      }).then(() => alert("🖼️ Se ha restablecido el fondo predeterminado."));
+      }).then(() => showToast("Fondo restablecido", "info"));
     }
 
     function cargarFondoGuardado() {
@@ -579,7 +755,7 @@
     function guardarEdicion() {
       const btn = document.getElementById('btnGuardar');
       btn.disabled = true;
-      btn.innerText = '⏳ Guardando en Google Sheets...';
+      btn.innerText = '⏳ Guardando...';
 
       const datosAdmin = {
         action: 'actualizarHallazgos',
@@ -600,8 +776,8 @@
       .then(res => res.json())
       .then(res => {
         btn.disabled = false;
-        btn.innerText = '💾 Guardar Cambios en Google Sheets';
-        alert(res.mensaje);
+        btn.innerText = '💾 Guardar Cambios';
+        showToast(res.mensaje, res.exito ? "success" : "error");
         if (res.exito) {
           cerrarModalDirecto();
           cargarDatos();
@@ -609,8 +785,8 @@
       })
       .catch(err => {
         btn.disabled = false;
-        btn.innerText = '💾 Guardar Cambios en Google Sheets';
-        alert("Error: " + err.message);
+        btn.innerText = '💾 Guardar Cambios';
+        showToast("Error: " + err.message, "error");
       });
     }
 
