@@ -805,4 +805,17 @@
     }
   </script>
 </body>
+  <script>
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/mpa/service-worker.js')
+      .then(registration => {
+        console.log('MPA Service Worker registrado:', registration.scope);
+      })
+      .catch(error => {
+        console.error('Error registrando Service Worker:', error);
+      });
+  });
+}
+</script>
 </html>
