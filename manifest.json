@@ -3,10 +3,10 @@
   "short_name": "MPA",
   "start_url": "/mpa/",
   "scope": "/mpa/",
-  "display": "standalone",
+  "display": "fullscreen",
   "orientation": "portrait",
-  "background_color": "#ffffff",
-  "theme_color": "#0b5e3c",
+  "background_color": "#2196F3",
+  "theme_color": "#2196F3",
   "description": "MPA Registro Móvil",
   "icons": [
     {
