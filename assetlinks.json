@@ -1,12 +1,8 @@
-[
-  {
-    "relation": ["delegate_permission/common.handle_all_urls"],
-    "target": {
-      "namespace": "android_app",
-      "package_name": "com.mpa.registromovil",
-      "sha256_cert_fingerprints": [
-        "6D:6A:B2:44:19:DF:4E:51:F7:B0:CA:4E:4A:A7:53:51:1C:F8:D4:66:83:00:C9:C4:C5:69:BF:FD:FC:43:BC:DD"
-      ]
-    }
-  }
-]
+[{
+      "relation": ["delegate_permission/common.handle_all_urls"],
+      "target": {
+        "namespace": "android_app",
+        "package_name": "com.mpa.registro",
+        "sha256_cert_fingerprints": ["F0:69:DD:8F:5B:56:FD:41:CE:3A:B8:AE:C1:EA:99:FE:71:A8:F2:C6:47:83:68:1E:2C:60:34:D1:91:CC:DE:A0"]
+      }
+    }]
