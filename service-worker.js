@@ -3,7 +3,7 @@
 // Versión 1.0
 // ============================================================
 
-const CACHE_NAME = 'mpa-registro-movil-v1';
+const CACHE_NAME = 'mpa-registro-movil-v2';
 
 const APP_SHELL = [
   '/mpa/',
