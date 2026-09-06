@@ -3,6 +3,6 @@
       "target": {
         "namespace": "android_app",
         "package_name": "com.mpa.registro",
-        "sha256_cert_fingerprints": ["F0:69:DD:8F:5B:56:FD:41:CE:3A:B8:AE:C1:EA:99:FE:71:A8:F2:C6:47:83:68:1E:2C:60:34:D1:91:CC:DE:A0"]
+        "sha256_cert_fingerprints": ["3D:5F:11:53:C1:39:0F:7F:CF:CB:F1:6D:01:F3:DA:27:9E:19:6F:24:DA:09:E9:76:60:5C:05:E1:30:94:87:2D"]
       }
     }]
