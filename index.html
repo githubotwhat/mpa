@@ -21,7 +21,7 @@
   <script>
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('/mpa/sw.js')
+        navigator.serviceWorker.register('/mpa/service-worker.js')
           .then(registration => {
             console.log('[MPA] Service Worker registrado correctamente:', registration.scope);
           })
