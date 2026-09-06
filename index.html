@@ -1,30 +1,37 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <!-- Enlace al Manifest -->
-<link rel="manifest" href="/mpa/manifest.json">
-<meta name="theme-color" content="#121212">
-
-<!-- Registro del Service Worker -->
-<script>
-  if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('sw.js')
-      .then(() => console.log('Service Worker de MPA Registro registrado correctamente'))
-      .catch((err) => console.error('Error al registrar Service Worker:', err));
-  }
-</script>
-
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>MPA Registro Móvil</title>
+  
+  <!-- Enlace al Manifest -->
   <link rel="manifest" href="/mpa/manifest.json">
-<meta name="theme-color" content="#1b3a4b">
-<meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<link rel="icon" type="image/png" sizes="192x192" href="/mpa/icon-192.png">
+  <meta name="theme-color" content="#1b3a4b">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <link rel="icon" type="image/png" sizes="192x192" href="/mpa/icon-192.png">
+
+  <!-- Fuentes y Gráficas -->
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <!-- Registro del Service Worker -->
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/mpa/sw.js')
+          .then(registration => {
+            console.log('[MPA] Service Worker registrado correctamente:', registration.scope);
+          })
+          .catch(error => {
+            console.error('[MPA] Error al registrar Service Worker:', error);
+          });
+      });
+    }
+  </script>
+
   <style>
     * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; margin: 0; padding: 0; font-family: 'Roboto', sans-serif; }
     body { 
@@ -35,40 +42,6 @@
       background-position: center; 
       background-attachment: fixed;
       transition: background 0.3s ease;
-    }
-    
-    /* PANTALLA DE INTRODUCCIÓN (SPLASH SCREEN) */
-    #splashScreen {
-      position: fixed;
-      top: 0; left: 0; width: 100vw; height: 100vh;
-      background-color: #1b3a4b;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      z-index: 9999;
-      transition: opacity 0.3s ease, visibility 0.3s ease;
-    }
-    #splashScreen img {
-      width: 120px;
-      height: auto;
-      margin-bottom: 12px;
-      animation: zoomIn 0.5s ease-out;
-    }
-    #splashScreen h2 {
-      color: #ffffff;
-      font-size: 1.2rem;
-      font-weight: 700;
-      letter-spacing: 0.5px;
-    }
-    #splashScreen.hidden {
-      opacity: 0;
-      visibility: hidden;
-    }
-
-    @keyframes zoomIn {
-      from { transform: scale(0.6); opacity: 0; }
-      to { transform: scale(1); opacity: 1; }
     }
 
     .app-header {
@@ -161,7 +134,6 @@
     .dash-card .num { font-size: 1.3rem; font-weight: 700; color: #1b3a4b; }
     .dash-card .txt { font-size: 0.72rem; color: #64748b; }
 
-    /* Estilos para contenedores de Gráficas */
     .charts-container {
       display: grid;
       grid-template-columns: 1fr;
@@ -210,7 +182,6 @@
     .loader { text-align: center; padding: 40px 0; color: #006494; font-weight: 500; }
     .error-msg { text-align: center; padding: 20px; color: #e63946; font-weight: 500; background: #fff5f5; border-radius: 10px; margin: 20px; }
 
-    /* NOTIFICACIÓN TOAST PERSONALIZADA */
     #toastContainer {
       position: fixed;
       bottom: 20px;
@@ -242,7 +213,6 @@
     .toast.success { background: #2a9d8f; }
     .toast.error { background: #e63946; }
 
-    /* MODAL DE LOGIN ADMIN PERSONALIZADO */
     .admin-modal-content {
       background: #fff;
       border-radius: 16px;
@@ -255,11 +225,6 @@
   </style>
 </head>
 <body>
-
-  <div id="splashScreen">
-    <img src="tractor.png" alt="MPA Logo">
-    <h2>MPA Registro Móvil</h2>
-  </div>
 
   <div class="app-header">
     <div class="header-title">
@@ -428,23 +393,15 @@
     let esAdmin = false;
     let pinGuardado = "";
 
-    // Variables de instancias de gráficas
     let chartEstadosInstance = null;
     let chartHallazgosInstance = null;
 
     window.onload = function() {
-      // Ocultar pantalla intro después de 1 segundo
-      setTimeout(() => {
-        const splash = document.getElementById('splashScreen');
-        splash.classList.add('hidden');
-      }, 1000);
-
       calcularSemanaOperativa();
       cargarDatos();
       cargarFondoGuardado();
     };
 
-    // FUNCIÓN DE NOTIFICACIONES TOAST EN LUGAR DE ALERT
     function showToast(mensaje, tipo = 'info') {
       const container = document.getElementById('toastContainer');
       const toast = document.createElement('div');
@@ -571,9 +528,7 @@
       renderizarGraficas(conPend, enMpa, comp, totalEncontrados, totalReparados);
     }
 
-    // GENERAR/ACTUALIZAR GRÁFICAS DE CHART.JS
     function renderizarGraficas(conPend, enMpa, comp, encontrados, reparados) {
-      // 1. Gráfica de Dona (Estados)
       const ctxEstados = document.getElementById('chartEstados').getContext('2d');
       if (chartEstadosInstance) chartEstadosInstance.destroy();
 
@@ -594,7 +549,6 @@
         }
       });
 
-      // 2. Gráfica de Barras (Hallazgos Encontrados vs Reparados)
       const ctxHallazgos = document.getElementById('chartHallazgos').getContext('2d');
       if (chartHallazgosInstance) chartHallazgosInstance.destroy();
 
@@ -795,7 +749,7 @@
       .then(res => res.json())
       .then(res => {
         btn.disabled = false;
-        btn.innerText = '💾 Guardar Cambios';
+        btn.innerText = '💾 Guardar Cambios en Google Sheets';
         showToast(res.mensaje, res.exito ? "success" : "error");
         if (res.exito) {
           cerrarModalDirecto();
@@ -804,7 +758,7 @@
       })
       .catch(err => {
         btn.disabled = false;
-        btn.innerText = '💾 Guardar Cambios';
+        btn.innerText = '💾 Guardar Cambios en Google Sheets';
         showToast("Error: " + err.message, "error");
       });
     }
@@ -818,17 +772,4 @@
     }
   </script>
 </body>
-  <script>
-if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.register('/mpa/service-worker.js')
-      .then(registration => {
-        console.log('MPA Service Worker registrado:', registration.scope);
-      })
-      .catch(error => {
-        console.error('Error registrando Service Worker:', error);
-      });
-  });
-}
-</script>
 </html>
