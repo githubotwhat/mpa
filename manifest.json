@@ -1,13 +1,12 @@
 {
   "name": "MPA Registro Móvil",
   "short_name": "MPA",
+  "description": "Control e Historial de Hallazgos",
   "start_url": "/mpa/",
   "scope": "/mpa/",
   "display": "standalone",
-  "orientation": "portrait",
-  "background_color": "#2196F3",
-  "theme_color": "#2196F3",
-  "description": "MPA Registro Móvil",
+  "background_color": "#ffffff",
+  "theme_color": "#0d6efd",
   "icons": [
     {
       "src": "/mpa/icon-192.png",
