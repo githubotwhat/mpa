@@ -1,25 +1,21 @@
 {
-  "name": "MPA Registro Móvil",
-  "short_name": "MPA",
-  "description": "Control e Historial de Hallazgos",
-  "start_url": "/index.html",
-  "scope": "/mpa/",
-  "display": "standalone",
-  "orientation": "portrait",
-  "background_color": "#ffffff",
-  "theme_color": "#0d6efd",
+  "short_name": "MPA Movil",
+  "name": "MPA Registro Movil",
   "icons": [
     {
-      "src": "/mpa/icon-192.png",
-      "sizes": "192x192",
+      "src": "icon-192.png",
       "type": "image/png",
-      "purpose": "any"
+      "sizes": "192x192"
     },
     {
-      "src": "/mpa/icon-512.png",
-      "sizes": "512x512",
+      "src": "icon-512.png",
       "type": "image/png",
-      "purpose": "maskable"
+      "sizes": "512x512"
     }
-  ]
+  ],
+  "start_url": "./index.html",
+  "background_color": "#ffffff",
+  "theme_color": "#0d6efd",
+  "display": "standalone",
+  "orientation": "portrait"
 }
