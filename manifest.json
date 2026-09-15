@@ -1,7 +1,7 @@
 {
   "name": "MPA Registro Móvil",
   "short_name": "MPA",
-  "start_url": "/mpa/",
+  "start_url": "/index.html",
   "scope": "/mpa/",
   "display": "standalone",
   "orientation": "portrait",
