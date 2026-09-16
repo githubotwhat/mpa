@@ -475,8 +475,9 @@
 
     window.onload = function() {
       calcularSemanaOperativa();
-      cargarDatosCacheOFecha();
       cargarFondoGuardado();
+      verificarSesionAdminGuardada();
+      cargarDatosCacheOFecha();
     };
 
     function showToast(mensaje, tipo = 'info') {
@@ -504,6 +505,25 @@
       if (numSemana < 1) numSemana = 1;
 
       document.getElementById('txtSemanaOperativa').innerText = `Semana Actual: #${numSemana}`;
+    }
+
+    // Verificar si la sesión de Admin fue guardada previamente
+    function verificarSesionAdminGuardada() {
+      const pinSesion = localStorage.getItem('mpa_admin_pin');
+      if (pinSesion) {
+        esAdmin = true;
+        pinGuardado = pinSesion;
+        activarInterfazAdmin();
+      }
+    }
+
+    function activarInterfazAdmin() {
+      document.getElementById('btnAdmin').classList.add('active');
+      document.getElementById('adminIcon').innerText = '🔓';
+      document.getElementById('adminTxt').innerText = 'Admin Activo';
+      document.getElementById('panelDashboardAdmin').style.display = 'block';
+      actualizarDashboard();
+      cargarHistorial();
     }
 
     // Carga ultra rápida mediante Cache + Actualización silenciosa
@@ -585,6 +605,7 @@
       } else {
         esAdmin = false;
         pinGuardado = "";
+        localStorage.removeItem('mpa_admin_pin'); // Elimina sesión persistente
         document.getElementById('btnAdmin').classList.remove('active');
         document.getElementById('adminIcon').innerText = '🔒';
         document.getElementById('adminTxt').innerText = 'Admin';
@@ -610,14 +631,9 @@
           if (esCorrecto) {
             esAdmin = true;
             pinGuardado = pin;
+            localStorage.setItem('mpa_admin_pin', pin); // Guarda sesión de admin en el navegador
             cerrarModalLoginAdmin();
-            document.getElementById('btnAdmin').classList.add('active');
-            document.getElementById('adminIcon').innerText = '🔓';
-            document.getElementById('adminTxt').innerText = 'Admin Activo';
-            document.getElementById('panelDashboardAdmin').style.display = 'block';
-            
-            actualizarDashboard();
-            cargarHistorial();
+            activarInterfazAdmin();
             showToast("Modo Administrador Activado", "success");
           } else {
             showToast("PIN Incorrecto", "error");
@@ -675,17 +691,21 @@
       reader.onload = function(e) {
         const base64 = e.target.result;
         document.body.style.backgroundImage = `url('${base64}')`;
+        localStorage.setItem('mpa_bg_image', base64); // Guardar localmente de forma persistente
         
         fetch(WEB_APP_URL, {
           method: 'POST',
           body: JSON.stringify({ action: 'guardarImagenFondo', bg: base64 })
-        }).then(() => showToast("Foto de fondo aplicada", "success"));
+        }).then(() => showToast("Foto de fondo aplicada", "success"))
+          .catch(() => showToast("Guardado localmente", "success"));
       };
       reader.readAsDataURL(file);
     }
 
     function quitarFotoFondo() {
       document.body.style.backgroundImage = 'none';
+      localStorage.removeItem('mpa_bg_image'); // Eliminar imagen de fondo local
+      
       fetch(WEB_APP_URL, {
         method: 'POST',
         body: JSON.stringify({ action: 'guardarImagenFondo', bg: '' })
@@ -693,13 +713,22 @@
     }
 
     function cargarFondoGuardado() {
+      // Prioridad 1: Fondo guardado en el navegador local
+      const localBg = localStorage.getItem('mpa_bg_image');
+      if (localBg) {
+        document.body.style.backgroundImage = `url('${localBg}')`;
+        return;
+      }
+
+      // Prioridad 2: Respaldo en la nube (Google Apps Script)
       fetch(`${WEB_APP_URL}?action=getImagenFondo`)
         .then(res => res.json())
         .then(bg => {
           if (bg && bg.trim() !== '') {
             document.body.style.backgroundImage = `url('${bg}')`;
+            localStorage.setItem('mpa_bg_image', bg);
           }
-        });
+        }).catch(err => console.log("Sin foto de fondo externa."));
     }
 
     function filtrarDatos() {
@@ -927,4 +956,3 @@
   </script>
 </body>
 </html>
-
