@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>MPA Registro Móvil</title>
+  <title>MPA Registro Móvil Pro</title>
   
   <!-- Enlace al Manifest -->
   <link rel="manifest" href="./manifest.json">
@@ -116,7 +116,6 @@
     .card.completed { border-left-color: #2a9d8f; }
     .card.in-mpa { border-left-color: #f59e0b; }
 
-    /* MEJORA 2: SLA Destello Rojo */
     .card.sla-atencion {
       border-left-color: #ef4444 !important;
       animation: pulse-danger 2s infinite;
@@ -132,7 +131,6 @@
     .card-badge { font-size: 0.72rem; padding: 4px 8px; border-radius: 12px; font-weight: 600; background: #f1f5f9; color: #475569; }
     .card-category { font-size: 0.85rem; color: #64748b; margin-bottom: 10px; }
 
-    /* MEJORA 5: Badge de Inactividad */
     .inactividad-tag {
       font-size: 0.7rem; font-weight: 700; padding: 2px 6px; border-radius: 6px;
       background: #fee2e2; color: #991b1b; display: inline-flex; align-items: center; gap: 3px; margin-top: 6px;
@@ -166,7 +164,6 @@
       min-height: 100px; max-height: 250px; overflow-y: auto;
     }
 
-    /* MEJORA 1: Galería de Fotos */
     .fotos-preview-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-top: 8px; }
     .foto-box {
       position: relative; border-radius: 8px; overflow: hidden; border: 1px solid var(--border-color);
@@ -179,7 +176,6 @@
       font-size: 0.75rem; cursor: pointer; display: flex; align-items: center; justify-content: center;
     }
 
-    /* MEJORA 3: Bitácora de Notas */
     .bitacora-container { max-height: 140px; overflow-y: auto; background: var(--metrics-bg); border: 1px solid var(--border-color); border-radius: 8px; padding: 8px; }
     .nota-item { font-size: 0.78rem; padding: 4px 0; border-bottom: 1px dashed var(--border-color); }
     .nota-item:last-child { border-bottom: none; }
@@ -217,11 +213,10 @@
     .btn-del-item { background: #ef4444; color: #fff; border: none; border-radius: 6px; padding: 8px 10px; font-size: 0.8rem; cursor: pointer; }
     .btn-add-item { background: #2a9d8f; color: #fff; border: none; padding: 8px 12px; border-radius: 6px; font-size: 0.8rem; font-weight: 600; cursor: pointer; margin-top: 6px; }
 
-    /* MEJORA 4: Botón WhatsApp */
     .btn-wsp {
       width: 100%; background: #25D366; color: #fff; border: none; padding: 12px;
-      border-radius: 10px; font-size: 0.9rem; font-weight: 700; cursor: pointer; margin-bottom: 10px;
-      display: flex; align-items: center; justify-content: center; gap: 8px;
+      border-radius: 10px; font-size: 0.9rem; font-weight: 700; cursor: pointer; margin-bottom: 12px;
+      display: none; align-items: center; justify-content: center; gap: 8px;
     }
     .btn-wsp:active { background: #1da851; transform: scale(0.98); }
 
@@ -251,7 +246,6 @@
     .btn-login-cancel { flex: 1; background: #64748b; color: #fff; border: none; padding: 10px; border-radius: 8px; font-size: 0.85rem; cursor: pointer; }
     .btn-login-submit { flex: 1; background: var(--accent-color); color: #fff; border: none; padding: 10px; border-radius: 8px; font-size: 0.85rem; font-weight: 700; cursor: pointer; }
 
-    /* MEJORA 6: Botón Instalar PWA */
     #pwaInstallBtn { display: none; }
   </style>
 </head>
@@ -263,7 +257,6 @@
       <p>Control e Historial de Hallazgos</p>
     </div>
     <div class="header-actions">
-      <!-- MEJORA 6: Botón Instalar APK/PWA -->
       <button class="header-btn" id="pwaInstallBtn" onclick="instalarPWA()">📲 Instalar</button>
       <button class="header-btn" id="btnAdmin" onclick="toggleAdminMode()">
         <span id="adminIcon">🔒</span> <span id="adminTxt">Admin</span>
@@ -343,8 +336,8 @@
         <button class="close-btn" onclick="cerrarModalDirecto()">&times;</button>
       </div>
 
-      <!-- MEJORA 4: Botón WhatsApp -->
-      <button class="btn-wsp" onclick="compartirWhatsApp()">
+      <!-- Botón WhatsApp (Solo visible al ser Admin) -->
+      <button class="btn-wsp" id="btnWspAdmin" onclick="compartirWhatsApp()">
         <span>📱 Compartir Reporte por WhatsApp</span>
       </button>
 
@@ -357,7 +350,6 @@
             <div class="metric-item"><span class="metric-val" id="modalProc">0</span><span class="metric-lbl">En Proceso</span></div>
             <div class="metric-item"><span class="metric-val val-danger" id="modalEsp">0</span><span class="metric-lbl">Pendientes</span></div>
           </div>
-          <!-- MEJORA 5: Inactividad en Vista Lectura -->
           <div id="modalInactividad" style="margin-top: 8px; text-align: center;"></div>
         </div>
 
@@ -366,7 +358,6 @@
           <div class="hallazgos-box" id="modalHallazgos">Sin hallazgos pendientes.</div>
         </div>
 
-        <!-- MEJORA 1: Galería de Fotos (Lectura) -->
         <div class="modal-section">
           <div class="modal-section-title">📷 Fotografías de Evidencia</div>
           <div class="fotos-preview-grid" id="galeriaFotosLectura">
@@ -374,7 +365,6 @@
           </div>
         </div>
 
-        <!-- MEJORA 3: Bitácora de Comentarios (Lectura) -->
         <div class="modal-section">
           <div class="modal-section-title">📝 Bitácora de Seguimiento</div>
           <div class="bitacora-container" id="bitacoraLectura">
@@ -410,9 +400,8 @@
           </div>
         </div>
 
-        <!-- MEJORA 5: Fecha de Inicio de Falla/Paro -->
         <div class="form-group">
-          <label>📅 Fecha Inicio MPA / TOTAL</label>
+          <label>📅 Fecha Inicio de Paro / Registro de Falla</label>
           <input type="date" id="editFechaInicioParo">
         </div>
 
@@ -424,20 +413,18 @@
           </div>
         </div>
 
-        <!-- MEJORA 1: Adjuntar Fotografías con Compresión WebP -->
         <div class="form-group">
           <label>📸 Adjuntar Evidencia (Max 2 Fotos WebP)</label>
           <input type="file" id="inputCamaraFotos" accept="image/*" capture="environment" multiple onchange="procesarFotosSeleccionadas(event)">
           <div class="fotos-preview-grid" id="galeriaFotosAdmin"></div>
         </div>
 
-        <!-- MEJORA 3: Agregar Nota de Bitácora -->
         <div class="form-group">
-          <label>💬 Agregar Nota de Seguimiento</label>
+          <label>💬 Agregar Nueva Nota de Seguimiento</label>
           <textarea id="editNuevaNota" rows="2" placeholder="Ej: Repuesto solicitado a bodega..."></textarea>
         </div>
 
-        <button class="btn-save" id="btnGuardar" onclick="guardarEdicion()">💾 Guardar Cambios...</button>
+        <button class="btn-save" id="btnGuardar" onclick="guardarEdicion()">💾 Guardar Cambios en Google Sheets</button>
       </div>
 
     </div>
@@ -470,8 +457,8 @@
     let esAdmin = false;
     let pinGuardado = "";
     let itemSeleccionadoActual = null;
-    let fotosBase64Temp = []; // Guarda las fotos WebP temporalmente
-    let deferredPrompt = null; // Para instalación PWA
+    let fotosBase64Temp = [];
+    let deferredPrompt = null;
 
     window.onload = function() {
       calcularSemanaOperativa();
@@ -480,7 +467,6 @@
       cargarDatosCacheOFecha();
     };
 
-    // MEJORA 6: Captura del evento de instalación PWA
     window.addEventListener('beforeinstallprompt', (e) => {
       e.preventDefault();
       deferredPrompt = e;
@@ -611,10 +597,18 @@
       filtrarDatos();
     }
 
-    // MEJORA 5: Calcular tiempo de inactividad / paro en días u horas
     function calcularInactividad(fechaInicioStr) {
       if (!fechaInicioStr) return null;
-      const inicio = new Date(fechaInicioStr);
+      
+      // Soporte para formatos YYYY-MM-DD o DD/MM/YYYY
+      let inicio;
+      if (fechaInicioStr.includes('/')) {
+        const p = fechaInicioStr.split('/');
+        inicio = new Date(p[2], p[1] - 1, p[0]);
+      } else {
+        inicio = new Date(fechaInicioStr);
+      }
+
       if (isNaN(inicio.getTime())) return null;
 
       const ahora = new Date();
@@ -666,7 +660,6 @@
         else if (item.enEspera > 0) cardClass += ' has-pending';
         else if (item.estado.includes('COMPLETADO')) cardClass += ' completed';
 
-        // MEJORA 2: Alertas por Prioridad (SLA > 4 días) y MEJORA 5: Inactividad
         const inactividad = calcularInactividad(item.fechaInicioParo);
         let esSLAAtencion = false;
         
@@ -710,7 +703,10 @@
       document.getElementById('modalId').innerText = 'ID: ' + item.id;
       document.getElementById('modalCat').innerText = item.categoria + (item.frente ? ' (' + item.frente + ')' : '');
 
-      // MEJORA 5: Calcular y mostrar Inactividad
+      // Control de Visibilidad del botón de WhatsApp según modo Admin
+      const btnWsp = document.getElementById('btnWspAdmin');
+      btnWsp.style.display = esAdmin ? 'flex' : 'none';
+
       const inactividad = calcularInactividad(item.fechaInicioParo);
       const contenedorInactividad = document.getElementById('modalInactividad');
       if (inactividad) {
@@ -719,10 +715,7 @@
         contenedorInactividad.innerHTML = '';
       }
 
-      // Renderizar Fotografías (Lectura)
       renderizarFotosLectura(fotosBase64Temp);
-
-      // Renderizar Bitácora (Lectura)
       renderizarBitacoraLectura(item.bitacora || []);
 
       if (esAdmin) {
@@ -764,7 +757,6 @@
       document.getElementById('modalOverlay').classList.add('active');
     }
 
-    // MEJORA 4: Compartir Reporte por WhatsApp
     function compartirWhatsApp() {
       if (!itemSeleccionadoActual) return;
       const i = itemSeleccionadoActual;
@@ -785,7 +777,6 @@
       window.open(url, '_blank');
     }
 
-    // MEJORA 1: Compresión WebP en el teléfono
     function procesarFotosSeleccionadas(event) {
       const files = event.target.files;
       if (!files || files.length === 0) return;
@@ -815,7 +806,6 @@
             const ctx = canvas.getContext('2d');
             ctx.drawImage(img, 0, 0, width, height);
 
-            // Convertir a WebP con calidad 0.7 (70%)
             const webpBase64 = canvas.toDataURL('image/webp', 0.7);
             fotosBase64Temp.push(webpBase64);
             renderizarFotosAdmin();
@@ -860,7 +850,6 @@
       renderizarFotosAdmin();
     }
 
-    // MEJORA 3: Renderizar Bitácora
     function renderizarBitacoraLectura(notas) {
       const cont = document.getElementById('bitacoraLectura');
       if (!notas || notas.length === 0) {
@@ -955,6 +944,7 @@
 
       const hallazgosFormateados = obtenerTextoHallazgosFormateado();
       const nuevaNota = document.getElementById('editNuevaNota').value.trim();
+      const fechaParoInput = document.getElementById('editFechaInicioParo').value;
 
       const datosAdmin = {
         action: 'actualizarHallazgos',
@@ -966,7 +956,7 @@
         enProceso: document.getElementById('editProc').value,
         enEspera: document.getElementById('editEsp').value,
         hallazgosPend: hallazgosFormateados,
-        fechaInicioParo: document.getElementById('editFechaInicioParo').value,
+        fechaInicioParo: fechaParoInput,
         fotos: fotosBase64Temp,
         nuevaNotaBitacora: nuevaNota
       };
@@ -981,6 +971,16 @@
         btn.innerText = '💾 Guardar Cambios';
         showToast(res.mensaje, res.exito ? "success" : "error");
         if (res.exito) {
+          // Actualización local inmediata de la bitácora y fecha de paro
+          if (itemSeleccionadoActual) {
+            itemSeleccionadoActual.fechaInicioParo = fechaParoInput;
+            if (nuevaNota !== '') {
+              if (!itemSeleccionadoActual.bitacora) itemSeleccionadoActual.bitacora = [];
+              const hoy = new Date();
+              const fechaStr = `${hoy.getDate()}/${hoy.getMonth() + 1}/${hoy.getFullYear().toString().substr(-2)}`;
+              itemSeleccionadoActual.bitacora.unshift({ fecha: fechaStr, texto: nuevaNota });
+            }
+          }
           cerrarModalDirecto();
           cargarDatos();
         }
