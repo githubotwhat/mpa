@@ -106,6 +106,7 @@
       background: rgba(255,255,255,0.95); border-radius: 14px; padding: 14px 16px;
       box-shadow: 0 2px 8px rgba(0,0,0,0.08); border-left: 5px solid #cbd5e1; cursor: pointer;
       backdrop-filter: blur(4px);
+      position: relative;
     }
     .card.has-pending { border-left-color: #e63946; }
     .card.completed { border-left-color: #2a9d8f; }
@@ -124,6 +125,17 @@
     .val-danger { color: #e63946; }
     .val-success { color: #2a9d8f; }
 
+    /* Indicador de Alerta y Tiempos */
+    .time-tracker-badge {
+      display: flex; gap: 6px; flex-wrap: wrap; margin-top: 8px; font-size: 0.7rem; font-weight: 600;
+    }
+    .time-pill {
+      padding: 3px 8px; border-radius: 10px; background: #e2e8f0; color: #334155;
+    }
+    .alert-pill {
+      background: #fee2e2; color: #991b1b; border: 1px solid #fca5a5;
+    }
+
     .modal-overlay {
       position: fixed; top: 0; left: 0; right: 0; bottom: 0;
       background: rgba(0,0,0,0.5); display: none; justify-content: flex-end; flex-direction: column; z-index: 1000;
@@ -141,13 +153,17 @@
     .hallazgos-box {
       background: #fff5f5; border: 1px solid #fed7d7; border-radius: 10px;
       padding: 12px; font-size: 0.88rem; color: #9b2c2c; white-space: pre-wrap; line-height: 1.45;
-      min-height: 150px; max-height: 300px; overflow-y: auto;
+      min-height: 120px; max-height: 250px; overflow-y: auto;
     }
 
     .admin-panel { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 14px; margin-bottom: 16px; }
-    .admin-title { font-size: 1rem; font-weight: 700; color: #1b3a4b; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; }
+    .admin-title { font-size: 1rem; font-weight: 700; color: #1b3a4b; display: flex; justify-content: space-between; align-items: center; }
     
-    .dash-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 12px; }
+    .toggle-panel-btn {
+      background: #cbd5e1; border: none; padding: 4px 8px; border-radius: 6px; font-size: 0.75rem; cursor: pointer; color: #1e293b; font-weight: 600;
+    }
+
+    .dash-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-top: 10px; margin-bottom: 12px; }
     .dash-card { background: #fff; padding: 10px; border-radius: 10px; border-left: 4px solid #006494; box-shadow: 0 1px 4px rgba(0,0,0,0.05); }
     .dash-card .num { font-size: 1.3rem; font-weight: 700; color: #1b3a4b; }
     .dash-card .txt { font-size: 0.72rem; color: #64748b; }
@@ -170,7 +186,7 @@
       border-radius: 10px;
       padding: 10px;
       background: #f8fafc;
-      max-height: 280px;
+      max-height: 250px;
       overflow-y: auto;
     }
     .hallazgo-item-row {
@@ -194,33 +210,11 @@
       outline: none;
     }
     .btn-del-item {
-      background: #ef4444;
-      color: #fff;
-      border: none;
-      border-radius: 6px;
-      padding: 8px 10px;
-      font-size: 0.8rem;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      transition: background 0.2s ease;
+      background: #ef4444; color: #fff; border: none; border-radius: 6px; padding: 8px 10px; font-size: 0.8rem; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: background 0.2s ease;
     }
     .btn-del-item:active { background: #dc2626; }
     .btn-add-item {
-      background: #2a9d8f;
-      color: #fff;
-      border: none;
-      padding: 8px 12px;
-      border-radius: 6px;
-      font-size: 0.8rem;
-      font-weight: 600;
-      cursor: pointer;
-      margin-top: 6px;
-      display: inline-flex;
-      align-items: center;
-      gap: 4px;
-      transition: background 0.2s ease;
+      background: #2a9d8f; color: #fff; border: none; padding: 8px 12px; border-radius: 6px; font-size: 0.8rem; font-weight: 600; cursor: pointer; margin-top: 6px; display: inline-flex; align-items: center; gap: 4px; transition: background 0.2s ease;
     }
     .btn-add-item:active { background: #218376; }
 
@@ -234,12 +228,10 @@
     .btn-save:active { background: #004d73; transform: scale(0.98); }
     .btn-save:disabled { background: #94a3b8; transform: none; }
 
-    /* Botón de WhatsApp exclusivo de administración */
     .btn-whatsapp {
       width: 100%; background: #25D366; color: #fff; border: none; padding: 12px;
-      border-radius: 10px; font-size: 0.9rem; font-weight: 700; cursor: pointer; margin-top: 10px;
-      display: flex; align-items: center; justify-content: center; gap: 8px;
-      box-shadow: 0 2px 6px rgba(37, 211, 102, 0.3);
+      border-radius: 10px; font-size: 0.9rem; font-weight: 700; cursor: pointer; margin-top: 8px;
+      display: flex; justify-content: center; align-items: center; gap: 6px;
       transition: background 0.2s ease, transform 0.1s ease;
     }
     .btn-whatsapp:active { background: #1da851; transform: scale(0.98); }
@@ -261,44 +253,17 @@
     .error-msg { text-align: center; padding: 20px; color: #e63946; font-weight: 500; background: #fff5f5; border-radius: 10px; margin: 20px; }
 
     #toastContainer {
-      position: fixed;
-      bottom: 20px;
-      left: 50%;
-      transform: translateX(-50%);
-      z-index: 10000;
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-      pointer-events: none;
+      position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); z-index: 10000; display: flex; flex-direction: column; gap: 8px; pointer-events: none;
     }
     .toast {
-      background: #1b3a4b;
-      color: #fff;
-      padding: 12px 20px;
-      border-radius: 25px;
-      font-size: 0.85rem;
-      font-weight: 500;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.25);
-      opacity: 0;
-      transform: translateY(20px);
-      transition: all 0.3s ease;
-      text-align: center;
+      background: #1b3a4b; color: #fff; padding: 12px 20px; border-radius: 25px; font-size: 0.85rem; font-weight: 500; box-shadow: 0 4px 12px rgba(0,0,0,0.25); opacity: 0; transform: translateY(20px); transition: all 0.3s ease; text-align: center;
     }
-    .toast.show {
-      opacity: 1;
-      transform: translateY(0);
-    }
+    .toast.show { opacity: 1; transform: translateY(0); }
     .toast.success { background: #2a9d8f; }
     .toast.error { background: #e63946; }
 
     .admin-modal-content {
-      background: #fff;
-      border-radius: 16px;
-      padding: 20px;
-      width: 85%;
-      max-width: 320px;
-      margin: auto;
-      box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+      background: #fff; border-radius: 16px; padding: 20px; width: 85%; max-width: 320px; margin: auto; box-shadow: 0 10px 25px rgba(0,0,0,0.2);
     }
 
     .btn-login-cancel {
@@ -309,9 +274,10 @@
 
     .btn-login-submit {
       flex: 1; background: #006494; color: #fff; border: none; padding: 10px; border-radius: 8px; font-size: 0.85rem; font-weight: 700; cursor: pointer;
-      transition: background 0.2s ease, transform 0.1s ease;
+      transition: all 0.2s ease;
     }
-    .btn-login-submit:active { background: #004d73; transform: scale(0.96); }
+    .btn-login-submit:active { background: #003853; transform: scale(0.95); }
+    .btn-login-submit.loading { background: #0284c7; color: #fff; pointer-events: none; }
   </style>
 </head>
 <body>
@@ -334,34 +300,39 @@
   <div id="panelDashboardAdmin" style="display: none; padding: 12px 16px 0 16px;">
     <div class="admin-panel">
       <div class="admin-title">
-        <span>📊 Panel General Admin</span>
-        <span style="font-size: 0.75rem; color: #2a9d8f;">● Activo</span>
+        <div>
+          <span>📊 Panel General Admin</span>
+          <span style="font-size: 0.75rem; color: #2a9d8f; margin-left: 6px;">● Activo</span>
+        </div>
+        <button class="toggle-panel-btn" id="btnTogglePanel" onclick="togglePanelAdminContent()">➖ Minimizar</button>
       </div>
       
-      <div class="dash-grid">
-        <div class="dash-card"><div class="num" id="dashTotal">0</div><div class="txt">Total Equipos</div></div>
-        <div class="dash-card" style="border-color: #e63946;"><div class="num" id="dashPend">0</div><div class="txt">Con Pendientes</div></div>
-        <div class="dash-card" style="border-color: #f59e0b;"><div class="num" id="dashEnMPA">0</div><div class="txt">En MPA 🛠️</div></div>
-        <div class="dash-card" style="border-color: #2a9d8f;"><div class="num" id="dashComp">0</div><div class="txt">Completados</div></div>
-      </div>
+      <div id="adminPanelContent">
+        <div class="dash-grid">
+          <div class="dash-card"><div class="num" id="dashTotal">0</div><div class="txt">Total Equipos</div></div>
+          <div class="dash-card" style="border-color: #e63946;"><div class="num" id="dashPend">0</div><div class="txt">Con Pendientes</div></div>
+          <div class="dash-card" style="border-color: #f59e0b;"><div class="num" id="dashEnMPA">0</div><div class="txt">En MPA 🛠️</div></div>
+          <div class="dash-card" style="border-color: #2a9d8f;"><div class="num" id="dashComp">0</div><div class="txt">Completados</div></div>
+        </div>
 
-      <details>
-        <summary>🖼️ Personalizar Foto de Fondo Global</summary>
-        <div style="padding-top: 10px;">
-          <input type="file" id="inputBgFile" accept="image/*" style="font-size: 0.8rem; margin-bottom: 8px;">
-          <div style="display: flex; gap: 8px;">
-            <button class="btn-secondary" id="btnSubirFondo" onclick="subirFotoFondo()">Aplicar para Todos</button>
-            <button class="btn-danger-sm" id="btnQuitarFondo" onclick="quitarFotoFondo()">Quitar Imagen</button>
+        <details>
+          <summary>🖼️ Personalizar Foto de Fondo Global</summary>
+          <div style="padding-top: 10px;">
+            <input type="file" id="inputBgFile" accept="image/*" style="font-size: 0.8rem; margin-bottom: 8px;">
+            <div style="display: flex; gap: 8px;">
+              <button class="btn-secondary" id="btnSubirFondo" onclick="subirFotoFondo()">Aplicar para Todos</button>
+              <button class="btn-danger-sm" id="btnQuitarFondo" onclick="quitarFotoFondo()">Quitar Imagen</button>
+            </div>
           </div>
-        </div>
-      </details>
+        </details>
 
-      <details>
-        <summary>📜 Historial Reciente de Cambios</summary>
-        <div class="historial-list" id="contenedorHistorial">
-          <div style="color: #94a3b8; text-align: center;">Cargando historial...</div>
-        </div>
-      </details>
+        <details>
+          <summary>📜 Historial Reciente de Cambios</summary>
+          <div class="historial-list" id="contenedorHistorial">
+            <div style="color: #94a3b8; text-align: center;">Cargando historial...</div>
+          </div>
+        </details>
+      </div>
     </div>
   </div>
 
@@ -449,9 +420,7 @@
         </div>
 
         <button class="btn-save" id="btnGuardar" onclick="guardarEdicion()">💾 Guardar Cambios</button>
-        
-        <!-- Botón exclusivo para Administrador -->
-        <button class="btn-whatsapp" onclick="compartirWhatsApp()">📱 Compartir reporte por WhatsApp</button>
+        <button class="btn-whatsapp" onclick="compartirWhatsApp()">📲 Compartir en WhatsApp</button>
       </div>
 
     </div>
@@ -468,7 +437,7 @@
 
       <div style="display: flex; gap: 8px; margin-top: 12px;">
         <button class="btn-login-cancel" onclick="cerrarModalLoginAdmin()">Cancelar</button>
-        <button class="btn-login-submit" onclick="procesarLoginAdmin()">Ingresar</button>
+        <button class="btn-login-submit" id="btnLoginSubmit" onclick="procesarLoginAdmin()">Ingresar</button>
       </div>
     </div>
   </div>
@@ -482,6 +451,7 @@
     let filtroActual = 'todos';
     let esAdmin = false;
     let pinGuardado = "";
+    let itemSeleccionadoActual = null;
 
     window.onload = function() {
       calcularSemanaOperativa();
@@ -515,6 +485,18 @@
       if (numSemana < 1) numSemana = 1;
 
       document.getElementById('txtSemanaOperativa').innerText = `Semana Actual: #${numSemana}`;
+    }
+
+    function togglePanelAdminContent() {
+      const content = document.getElementById('adminPanelContent');
+      const btn = document.getElementById('btnTogglePanel');
+      if (content.style.display === 'none') {
+        content.style.display = 'block';
+        btn.innerText = '➖ Minimizar';
+      } else {
+        content.style.display = 'none';
+        btn.innerText = '➕ Maximizar';
+      }
     }
 
     function verificarSesionAdminGuardada() {
@@ -570,9 +552,59 @@
 
     function renderizarLista(datos) {
       listaGlobal = datos || [];
+      procesarTiemposLocales(listaGlobal);
       poblarSelectorFrentes();
       filtrarDatos();
       if (esAdmin) actualizarDashboard();
+    }
+
+    // Gestiona los días transcurridos desde hallazgos y entrada a MPA sin editar Google Sheets
+    function procesarTiemposLocales(lista) {
+      let tracker = JSON.parse(localStorage.getItem('mpa_tiempos_tracker') || '{}');
+      const ahora = new Date().getTime();
+
+      lista.forEach(item => {
+        if (!tracker[item.id]) {
+          tracker[item.id] = { fechaHallazgos: null, fechaMpa: null, ultimosPendientes: 0 };
+        }
+
+        let record = tracker[item.id];
+        let numPendientes = Number(item.enEspera) || 0;
+
+        // Rastreo de Hallazgos
+        if (numPendientes > 0) {
+          if (!record.fechaHallazgos || record.ultimosPendientes !== numPendientes) {
+            record.fechaHallazgos = ahora;
+          }
+        } else {
+          record.fechaHallazgos = null;
+        }
+        record.ultimosPendientes = numPendientes;
+
+        // Rastreo de Entrada a MPA
+        if (item.estado.includes('EN MPA')) {
+          if (!record.fechaMpa) {
+            record.fechaMpa = ahora;
+          }
+        } else {
+          record.fechaMpa = null;
+        }
+
+        // Cálculo de días
+        if (record.fechaHallazgos) {
+          item.diasFalla = Math.floor((ahora - record.fechaHallazgos) / (1000 * 60 * 60 * 24));
+        } else {
+          item.diasFalla = 0;
+        }
+
+        if (record.fechaMpa) {
+          item.diasMpa = Math.floor((ahora - record.fechaMpa) / (1000 * 60 * 60 * 24));
+        } else {
+          item.diasMpa = 0;
+        }
+      });
+
+      localStorage.setItem('mpa_tiempos_tracker', JSON.stringify(tracker));
     }
 
     function poblarSelectorFrentes() {
@@ -627,14 +659,22 @@
 
     function procesarLoginAdmin() {
       const pin = document.getElementById('inputPinAdmin').value;
+      const btn = document.getElementById('btnLoginSubmit');
+
       if (!pin) {
         showToast("Ingresa un PIN válido", "error");
         return;
       }
 
+      btn.classList.add('loading');
+      btn.innerText = 'Iniciando...';
+
       fetch(`${WEB_APP_URL}?action=verificarPin&pin=${encodeURIComponent(pin)}`)
         .then(res => res.json())
         .then(esCorrecto => {
+          btn.classList.remove('loading');
+          btn.innerText = 'Ingresar';
+
           if (esCorrecto) {
             esAdmin = true;
             pinGuardado = pin;
@@ -646,7 +686,11 @@
             showToast("PIN Incorrecto", "error");
           }
         })
-        .catch(err => showToast("Error al verificar PIN: " + err.message, "error"));
+        .catch(err => {
+          btn.classList.remove('loading');
+          btn.innerText = 'Ingresar';
+          showToast("Error al verificar PIN: " + err.message, "error");
+        });
     }
 
     function actualizarDashboard() {
@@ -810,6 +854,17 @@
         card.className = cardClass;
         card.onclick = () => abrirModal(item);
 
+        let tiempoHtml = '';
+        if (item.enEspera > 0) {
+          tiempoHtml += `<span class="time-pill">⏱️ ${item.diasFalla}d con hallazgos</span>`;
+          if (item.diasFalla >= 3) {
+            tiempoHtml += `<span class="time-pill alert-pill">⚠️ >3 días sin reparar</span>`;
+          }
+        }
+        if (item.estado.includes('EN MPA')) {
+          tiempoHtml += `<span class="time-pill">🛠️ ${item.diasMpa}d en MPA</span>`;
+        }
+
         card.innerHTML = `
           <div class="card-header">
             <span class="card-id">🚜 ${item.id}</span>
@@ -822,12 +877,14 @@
             <div class="metric-item"><span class="metric-val val-danger">${item.enEspera}</span><span class="metric-lbl">Pendientes</span></div>
             <div class="metric-item"><span class="metric-val" style="color:#006494;">${item.avance}</span><span class="metric-lbl">Avance</span></div>
           </div>
+          ${tiempoHtml ? `<div class="time-tracker-badge">${tiempoHtml}</div>` : ''}
         `;
         container.appendChild(card);
       });
     }
 
     function abrirModal(item) {
+      itemSeleccionadoActual = item;
       document.getElementById('modalId').innerText = 'ID: ' + item.id;
       document.getElementById('modalCat').innerText = item.categoria + (item.frente ? ' (' + item.frente + ')' : '');
 
@@ -970,7 +1027,7 @@
       .then(res => res.json())
       .then(res => {
         btn.disabled = false;
-        btn.innerText = '💾 Guardar Cambios';
+        btn.innerText = '💾 Guardar Cambios en Google Sheets';
         showToast(res.mensaje, res.exito ? "success" : "error");
         if (res.exito) {
           cerrarModalDirecto();
@@ -979,34 +1036,35 @@
       })
       .catch(err => {
         btn.disabled = false;
-        btn.innerText = '💾 Guardar Cambios';
+        btn.innerText = '💾 Guardar Cambios en Google Sheets';
         showToast("Error: " + err.message, "error");
       });
     }
 
-    /* Función exclusiva de administración para compartir vía WhatsApp */
     function compartirWhatsApp() {
-      const id = document.getElementById('editIdMaquinaria').value;
-      const categoria = document.getElementById('modalCat').innerText;
+      if (!itemSeleccionadoActual) return;
+
+      const hoy = new Date();
+      const fechaFormateada = hoy.toLocaleDateString('es-ES', {
+        day: '2-digit', month: '2-digit', year: 'numeric'
+      });
+
       const enc = document.getElementById('editEnc').value || '0';
       const rep = document.getElementById('editRep').value || '0';
-      const proc = document.getElementById('editProc').value || '0';
       const esp = document.getElementById('editEsp').value || '0';
-      const hallazgos = obtenerTextoHallazgosFormateado();
+      const idMaquina = itemSeleccionadoActual.id;
+      const hallazgosTxt = obtenerTextoHallazgosFormateado() || 'Sin hallazgos pendientes.';
 
-      let mensaje = `*📌 REPORTE DE MAQUINARIA MPA*\n`;
-      mensaje += `🚜 *Equipo:* ${id}\n`;
-      mensaje += `*📊 Resumen de Estado:*\n`;
-      mensaje += `• Encontradas: ${enc}\n`;
-      mensaje += `• Reparadas: ${rep}\n`;
-      mensaje += `• En Proceso: ${proc}\n`;
-      mensaje += `• Pendientes: ${esp}\n\n`;
-      
-      if (hallazgos.trim() !== '') {
-        mensaje += `*⚠️ Detalle de Pendientes:*\n${hallazgos}`;
-      } else {
-        mensaje += `*✔️ Sin hallazgos pendientes.*`;
-      }
+      const mensaje = `📌 *ESTADO DE MAQUINARIA - MPA*
+📅 *Fecha:* ${fechaFormateada}
+🚜 *ID Máquina:* ${idMaquina}
+
+🔍 *Hallazgos Encontrados:* ${enc}
+✅ *Hallazgos Reparados:* ${rep}
+⏳ *Hallazgos en Espera:* ${esp}
+
+📋 *Descripción de Hallazgos Pendientes:*
+${hallazgosTxt}`;
 
       const url = `https://api.whatsapp.com/send?text=${encodeURIComponent(mensaje)}`;
       window.open(url, '_blank');
