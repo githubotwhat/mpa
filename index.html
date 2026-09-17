@@ -1042,20 +1042,25 @@
     }
 
     function compartirWhatsApp() {
-      if (!itemSeleccionadoActual) return;
+  if (!itemSeleccionadoActual) return;
 
-      const hoy = new Date();
-      const fechaFormateada = hoy.toLocaleDateString('es-ES', {
-        day: '2-digit', month: '2-digit', year: 'numeric'
-      });
+  const hoy = new Date();
+  const fechaFormateada = hoy.toLocaleDateString('es-ES', {
+    day: '2-digit', month: '2-digit', year: 'numeric'
+  });
 
-      const enc = document.getElementById('editEnc').value || '0';
-      const rep = document.getElementById('editRep').value || '0';
-      const esp = document.getElementById('editEsp').value || '0';
-      const idMaquina = itemSeleccionadoActual.id;
-      const hallazgosTxt = obtenerTextoHallazgosFormateado() || 'Sin hallazgos pendientes.';
+  const enc = Number(document.getElementById('editEnc').value) || 0;
+  const rep = Number(document.getElementById('editRep').value) || 0;
+  const esp = Number(document.getElementById('editEsp').value) || 0;
+  const idMaquina = itemSeleccionadoActual.id;
+  const estado = itemSeleccionadoActual.estado || 'N/A';
+  
+  // Cálculo dinámico del avance
+  const avancePorcentaje = enc > 0 ? Math.round((rep / enc) * 100) : 100;
+  
+  const hallazgosTxt = obtenerTextoHallazgosFormateado() || 'Sin hallazgos pendientes.';
 
-      const mensaje = `📌 *ESTADO DE MAQUINARIA - MPA*
+  const mensaje = `📌 *ESTADO DE MAQUINARIA - MPA*
 📅 *Fecha:* ${fechaFormateada}
 🚜 *ID Máquina:* ${idMaquina}
 
@@ -1063,14 +1068,15 @@
 ✅ *Hallazgos Reparados:* ${rep}
 ⏳ *Hallazgos en Espera:* ${esp}
 📊 *Estado:* ${estado}
-📈 *Avance:* ${avancePorcentaje}% (Reparadas: ${reparadas}/${total})
+📈 *Avance:* ${avancePorcentaje}% (Reparadas: ${rep}/${enc})
 
 📋 *Descripción de Hallazgos Pendientes:*
 ${hallazgosTxt}`;
 
-      const url = `https://api.whatsapp.com/send?text=${encodeURIComponent(mensaje)}`;
-      window.open(url, '_blank');
-    }
+  const url = `https://api.whatsapp.com/send?text=${encodeURIComponent(mensaje)}`;
+  window.open(url, '_blank');
+}
+
 
     function cerrarModal(e) {
       if (e.target.id === 'modalOverlay') cerrarModalDirecto();
