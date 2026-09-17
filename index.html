@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>MPA Registro Móvil Pro</title>
+  <title>MPA Registro Móvil</title>
   
   <!-- Enlace al Manifest -->
   <link rel="manifest" href="./manifest.json">
@@ -33,69 +33,64 @@
 
   <style>
     * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; margin: 0; padding: 0; font-family: 'Roboto', sans-serif; }
-    
-    :root {
-      --bg-color: #f4f6f9;
-      --text-color: #333;
-      --card-bg: rgba(255,255,255,0.95);
-      --card-text: #1e293b;
-      --header-bg: linear-gradient(135deg, #1b3a4b, #006494);
-      --accent-color: #006494;
-      --border-color: #cbd5e1;
-      --metrics-bg: #f8fafc;
-    }
-
     body { 
-      background-color: var(--bg-color); 
-      color: var(--text-color); 
+      background-color: #f4f6f9; 
+      color: #333; 
       padding-bottom: 30px; 
       background-size: cover; 
       background-position: center; 
       background-attachment: fixed;
-      transition: background 0.3s ease, color 0.3s ease;
+      transition: background 0.3s ease;
     }
 
     .app-header {
       position: sticky; top: 0; z-index: 100;
-      background: var(--header-bg);
+      background: linear-gradient(135deg, #1b3a4b, #006494);
       color: #fff; padding: 14px 16px; text-align: center;
       box-shadow: 0 4px 12px rgba(0,0,0,0.15);
       border-bottom-left-radius: 16px; border-bottom-right-radius: 16px;
       display: flex; justify-content: space-between; align-items: center;
-      border-bottom: 2px solid var(--border-color);
     }
     .header-title h2 { font-size: 1.1rem; font-weight: 700; text-align: left; }
     .header-title p { font-size: 0.72rem; opacity: 0.85; margin-top: 2px; text-align: left; }
     
-    .header-actions { display: flex; gap: 6px; align-items: center; }
-
-    .header-btn {
+    .admin-btn {
       background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.4);
-      color: #fff; padding: 6px 10px; border-radius: 20px; font-size: 0.75rem;
+      color: #fff; padding: 6px 12px; border-radius: 20px; font-size: 0.75rem;
       font-weight: 500; cursor: pointer; display: flex; align-items: center; gap: 4px;
       transition: all 0.2s ease;
     }
-    .header-btn:active { transform: scale(0.95); }
-    .header-btn.active { background: #2a9d8f; border-color: #2a9d8f; color: #fff; }
+    .admin-btn:active { transform: scale(0.95); }
+    .admin-btn.active { background: #2a9d8f; border-color: #2a9d8f; }
 
     .semana-badge {
-      background: var(--accent-color); color: #fff; text-align: center; font-size: 0.78rem; font-weight: 700;
+      background: #006494; color: #fff; text-align: center; font-size: 0.78rem; font-weight: 700;
       padding: 6px 12px; margin: 8px 16px 0 16px; border-radius: 8px;
       box-shadow: 0 2px 6px rgba(0,0,0,0.08); display: flex; justify-content: space-between; align-items: center;
     }
 
-    .frente-select-box { margin: 10px 16px 0 16px; }
+    /* Selector por Frente */
+    .frente-select-box {
+      margin: 10px 16px 0 16px;
+    }
     .frente-select-box select {
-      width: 100%; padding: 10px 14px; border: 1px solid var(--border-color);
-      border-radius: 12px; font-size: 0.88rem; font-weight: 600; color: var(--card-text);
-      background: var(--card-bg); box-shadow: 0 2px 6px rgba(0,0,0,0.04); outline: none;
+      width: 100%;
+      padding: 10px 14px;
+      border: 1px solid #cbd5e1;
+      border-radius: 12px;
+      font-size: 0.88rem;
+      font-weight: 600;
+      color: #1b3a4b;
+      background: #fff;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+      outline: none;
     }
 
     .search-box { margin: 8px 16px 8px 16px; position: relative; }
     .search-box input {
       width: 100%; padding: 12px 16px 12px 42px;
-      border: 1px solid var(--border-color); border-radius: 25px;
-      font-size: 0.92rem; background-color: var(--card-bg); color: var(--text-color);
+      border: 1px solid #dcdfe6; border-radius: 25px;
+      font-size: 0.92rem; background-color: rgba(255,255,255,0.92);
       box-shadow: 0 2px 8px rgba(0,0,0,0.05); outline: none;
     }
     .search-icon { position: absolute; left: 15px; top: 50%; transform: translateY(-50%); font-size: 1.1rem; color: #888; }
@@ -103,40 +98,25 @@
     .filter-chips { display: flex; gap: 8px; padding: 0 16px 12px 16px; overflow-x: auto; scrollbar-width: none; }
     .filter-chips::-webkit-scrollbar { display: none; }
     .chip { padding: 8px 14px; border-radius: 20px; background: rgba(224,230,237,0.9); color: #4a5568; font-size: 0.8rem; font-weight: 500; white-space: nowrap; cursor: pointer; }
-    .chip.active { background: var(--accent-color); color: #fff; }
+    .chip.active { background: #006494; color: #fff; }
 
     .cards-container { padding: 0 16px; display: flex; flex-direction: column; gap: 12px; }
     
     .card {
-      background: var(--card-bg); border-radius: 14px; padding: 14px 16px;
+      background: rgba(255,255,255,0.95); border-radius: 14px; padding: 14px 16px;
       box-shadow: 0 2px 8px rgba(0,0,0,0.08); border-left: 5px solid #cbd5e1; cursor: pointer;
-      backdrop-filter: blur(4px); position: relative; overflow: hidden;
+      backdrop-filter: blur(4px);
     }
     .card.has-pending { border-left-color: #e63946; }
     .card.completed { border-left-color: #2a9d8f; }
     .card.in-mpa { border-left-color: #f59e0b; }
 
-    .card.sla-atencion {
-      border-left-color: #ef4444 !important;
-      animation: pulse-danger 2s infinite;
-    }
-    @keyframes pulse-danger {
-      0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4); }
-      70% { box-shadow: 0 0 0 10px rgba(239, 68, 68, 0); }
-      100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
-    }
-
     .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
-    .card-id { font-size: 1.1rem; font-weight: 700; color: var(--card-text); }
+    .card-id { font-size: 1.1rem; font-weight: 700; color: #1e293b; }
     .card-badge { font-size: 0.72rem; padding: 4px 8px; border-radius: 12px; font-weight: 600; background: #f1f5f9; color: #475569; }
     .card-category { font-size: 0.85rem; color: #64748b; margin-bottom: 10px; }
 
-    .inactividad-tag {
-      font-size: 0.7rem; font-weight: 700; padding: 2px 6px; border-radius: 6px;
-      background: #fee2e2; color: #991b1b; display: inline-flex; align-items: center; gap: 3px; margin-top: 6px;
-    }
-
-    .metrics-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; background: var(--metrics-bg); padding: 8px; border-radius: 10px; text-align: center; }
+    .metrics-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; background: #f8fafc; padding: 8px; border-radius: 10px; text-align: center; }
     .metric-item { display: flex; flex-direction: column; }
     .metric-val { font-size: 0.95rem; font-weight: 700; }
     .metric-lbl { font-size: 0.65rem; color: #64748b; margin-top: 2px; }
@@ -146,107 +126,192 @@
 
     .modal-overlay {
       position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-      background: rgba(0,0,0,0.6); display: none; justify-content: flex-end; flex-direction: column; z-index: 1000;
+      background: rgba(0,0,0,0.5); display: none; justify-content: flex-end; flex-direction: column; z-index: 1000;
     }
     .modal-overlay.active { display: flex; }
     .modal-content {
-      background: var(--bg-color); color: var(--text-color); border-top-left-radius: 20px; border-top-right-radius: 20px;
-      padding: 20px; max-height: 90vh; overflow-y: auto; border-top: 3px solid var(--accent-color);
+      background: #fff; border-top-left-radius: 20px; border-top-right-radius: 20px;
+      padding: 20px; max-height: 90vh; overflow-y: auto;
     }
-    .modal-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); padding-bottom: 12px; margin-bottom: 16px; }
+    .modal-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #e2e8f0; padding-bottom: 12px; margin-bottom: 16px; }
     .close-btn { font-size: 1.5rem; background: none; border: none; color: #64748b; cursor: pointer; }
     .modal-section { margin-bottom: 16px; }
-    .modal-section-title { font-size: 0.85rem; font-weight: 700; color: var(--accent-color); text-transform: uppercase; margin-bottom: 8px; }
+    .modal-section-title { font-size: 0.85rem; font-weight: 700; color: #1b3a4b; text-transform: uppercase; margin-bottom: 8px; }
     
     .hallazgos-box {
       background: #fff5f5; border: 1px solid #fed7d7; border-radius: 10px;
       padding: 12px; font-size: 0.88rem; color: #9b2c2c; white-space: pre-wrap; line-height: 1.45;
-      min-height: 100px; max-height: 250px; overflow-y: auto;
+      min-height: 150px; max-height: 300px; overflow-y: auto;
     }
 
-    .fotos-preview-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-top: 8px; }
-    .foto-box {
-      position: relative; border-radius: 8px; overflow: hidden; border: 1px solid var(--border-color);
-      height: 110px; background: #eee; display: flex; align-items: center; justify-content: center;
-    }
-    .foto-box img { width: 100%; height: 100%; object-fit: cover; }
-    .foto-box .btn-del-foto {
-      position: absolute; top: 4px; right: 4px; background: rgba(239,68,68,0.9);
-      color: #fff; border: none; border-radius: 50%; width: 24px; height: 24px;
-      font-size: 0.75rem; cursor: pointer; display: flex; align-items: center; justify-content: center;
-    }
-
-    .bitacora-container { max-height: 140px; overflow-y: auto; background: var(--metrics-bg); border: 1px solid var(--border-color); border-radius: 8px; padding: 8px; }
-    .nota-item { font-size: 0.78rem; padding: 4px 0; border-bottom: 1px dashed var(--border-color); }
-    .nota-item:last-child { border-bottom: none; }
-    .nota-fecha { font-weight: 700; color: var(--accent-color); font-size: 0.7rem; }
-
-    .admin-panel { background: var(--metrics-bg); border: 1px solid var(--border-color); border-radius: 12px; padding: 14px; margin-bottom: 16px; }
-    .admin-title { font-size: 1rem; font-weight: 700; color: var(--accent-color); margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; }
+    .admin-panel { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 14px; margin-bottom: 16px; }
+    .admin-title { font-size: 1rem; font-weight: 700; color: #1b3a4b; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; }
     
     .dash-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 12px; }
-    .dash-card { background: var(--card-bg); padding: 10px; border-radius: 10px; border-left: 4px solid var(--accent-color); box-shadow: 0 1px 4px rgba(0,0,0,0.05); }
-    .dash-card .num { font-size: 1.3rem; font-weight: 700; color: var(--card-text); }
+    .dash-card { background: #fff; padding: 10px; border-radius: 10px; border-left: 4px solid #006494; box-shadow: 0 1px 4px rgba(0,0,0,0.05); }
+    .dash-card .num { font-size: 1.3rem; font-weight: 700; color: #1b3a4b; }
     .dash-card .txt { font-size: 0.72rem; color: #64748b; }
 
-    details { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 8px; padding: 8px 12px; margin-bottom: 8px; }
-    summary { font-size: 0.85rem; font-weight: 600; cursor: pointer; color: var(--accent-color); outline: none; }
+    details { background: #fff; border: 1px solid #cbd5e1; border-radius: 8px; padding: 8px 12px; margin-bottom: 8px; }
+    summary { font-size: 0.85rem; font-weight: 600; cursor: pointer; color: #1b3a4b; outline: none; }
     
     .historial-list { max-height: 160px; overflow-y: auto; margin-top: 8px; font-size: 0.78rem; }
-    .historial-item { padding: 6px 0; border-bottom: 1px dashed var(--border-color); color: #475569; }
+    .historial-item { padding: 6px 0; border-bottom: 1px dashed #e2e8f0; color: #475569; }
 
     .form-group { margin-bottom: 12px; }
-    .form-group label { display: block; font-size: 0.8rem; font-weight: 600; color: var(--text-color); margin-bottom: 4px; }
-    .form-group input, .form-group textarea {
-      width: 100%; padding: 10px 12px; border: 1px solid var(--border-color); border-radius: 8px;
-      font-size: 0.9rem; outline: none; background: var(--card-bg); color: var(--text-color);
+    .form-group label { display: block; font-size: 0.8rem; font-weight: 600; color: #475569; margin-bottom: 4px; }
+    .form-group input {
+      width: 100%; padding: 10px 12px; border: 1px solid #cbd5e1; border-radius: 8px;
+      font-size: 0.9rem; outline: none;
     }
 
     .hallazgos-dynamic-container {
-      border: 1px solid var(--border-color); border-radius: 10px; padding: 10px;
-      background: var(--metrics-bg); max-height: 250px; overflow-y: auto;
+      border: 1px solid #cbd5e1;
+      border-radius: 10px;
+      padding: 10px;
+      background: #f8fafc;
+      max-height: 280px;
+      overflow-y: auto;
     }
-    .hallazgo-item-row { display: flex; align-items: center; gap: 6px; margin-bottom: 8px; }
-    .hallazgo-item-row span { font-size: 0.85rem; font-weight: 700; color: var(--accent-color); min-width: 22px; }
-    .hallazgo-item-row input { flex: 1; padding: 8px 10px; border: 1px solid var(--border-color); border-radius: 6px; font-size: 0.85rem; outline: none; }
-    
-    .btn-del-item { background: #ef4444; color: #fff; border: none; border-radius: 6px; padding: 8px 10px; font-size: 0.8rem; cursor: pointer; }
-    .btn-add-item { background: #2a9d8f; color: #fff; border: none; padding: 8px 12px; border-radius: 6px; font-size: 0.8rem; font-weight: 600; cursor: pointer; margin-top: 6px; }
-
-    .btn-wsp {
-      width: 100%; background: #25D366; color: #fff; border: none; padding: 12px;
-      border-radius: 10px; font-size: 0.9rem; font-weight: 700; cursor: pointer; margin-bottom: 12px;
-      display: none; align-items: center; justify-content: center; gap: 8px;
+    .hallazgo-item-row {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 8px;
     }
-    .btn-wsp:active { background: #1da851; transform: scale(0.98); }
+    .hallazgo-item-row span {
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: #1b3a4b;
+      min-width: 22px;
+    }
+    .hallazgo-item-row input {
+      flex: 1;
+      padding: 8px 10px;
+      border: 1px solid #cbd5e1;
+      border-radius: 6px;
+      font-size: 0.85rem;
+      outline: none;
+    }
+    .btn-del-item {
+      background: #ef4444;
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      padding: 8px 10px;
+      font-size: 0.8rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.2s ease;
+    }
+    .btn-del-item:active { background: #dc2626; }
+    .btn-add-item {
+      background: #2a9d8f;
+      color: #fff;
+      border: none;
+      padding: 8px 12px;
+      border-radius: 6px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      cursor: pointer;
+      margin-top: 6px;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      transition: background 0.2s ease;
+    }
+    .btn-add-item:active { background: #218376; }
 
     .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
 
     .btn-save {
-      width: 100%; background: var(--accent-color); color: #fff; border: none; padding: 14px;
+      width: 100%; background: #006494; color: #fff; border: none; padding: 14px;
       border-radius: 10px; font-size: 0.95rem; font-weight: 700; cursor: pointer; margin-top: 8px;
+      transition: background 0.2s ease, transform 0.1s ease;
     }
-    .btn-save:active { opacity: 0.8; transform: scale(0.98); }
+    .btn-save:active { background: #004d73; transform: scale(0.98); }
     .btn-save:disabled { background: #94a3b8; transform: none; }
 
-    .btn-secondary { background: #64748b; color: #fff; border: none; padding: 8px 12px; border-radius: 6px; font-size: 0.8rem; cursor: pointer; }
-    .btn-danger-sm { background: #ef4444; color: #fff; border: none; padding: 6px 10px; border-radius: 6px; font-size: 0.75rem; cursor: pointer; }
+    /* Botón de WhatsApp exclusivo de administración */
+    .btn-whatsapp {
+      width: 100%; background: #25D366; color: #fff; border: none; padding: 12px;
+      border-radius: 10px; font-size: 0.9rem; font-weight: 700; cursor: pointer; margin-top: 10px;
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+      box-shadow: 0 2px 6px rgba(37, 211, 102, 0.3);
+      transition: background 0.2s ease, transform 0.1s ease;
+    }
+    .btn-whatsapp:active { background: #1da851; transform: scale(0.98); }
+
+    .btn-secondary { 
+      background: #64748b; color: #fff; border: none; padding: 8px 12px; border-radius: 6px; font-size: 0.8rem; cursor: pointer;
+      transition: background 0.2s ease, transform 0.1s ease;
+    }
+    .btn-secondary:active { background: #475569; transform: scale(0.96); }
+
+    .btn-danger-sm { 
+      background: #ef4444; color: #fff; border: none; padding: 6px 10px; border-radius: 6px; font-size: 0.75rem; cursor: pointer;
+      transition: background 0.2s ease;
+    }
+    .btn-danger-sm:active { background: #dc2626; }
 
     .empty-msg { text-align: center; padding: 40px 20px; color: #94a3b8; font-size: 0.9rem; }
-    .loader { text-align: center; padding: 40px 0; color: var(--accent-color); font-weight: 500; }
+    .loader { text-align: center; padding: 40px 0; color: #006494; font-weight: 500; }
     .error-msg { text-align: center; padding: 20px; color: #e63946; font-weight: 500; background: #fff5f5; border-radius: 10px; margin: 20px; }
 
-    #toastContainer { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); z-index: 10000; display: flex; flex-direction: column; gap: 8px; pointer-events: none; }
-    .toast { background: #1b3a4b; color: #fff; padding: 12px 20px; border-radius: 25px; font-size: 0.85rem; font-weight: 500; box-shadow: 0 4px 12px rgba(0,0,0,0.25); opacity: 0; transform: translateY(20px); transition: all 0.3s ease; text-align: center; }
-    .toast.show { opacity: 1; transform: translateY(0); }
+    #toastContainer {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 10000;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      pointer-events: none;
+    }
+    .toast {
+      background: #1b3a4b;
+      color: #fff;
+      padding: 12px 20px;
+      border-radius: 25px;
+      font-size: 0.85rem;
+      font-weight: 500;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+      opacity: 0;
+      transform: translateY(20px);
+      transition: all 0.3s ease;
+      text-align: center;
+    }
+    .toast.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
     .toast.success { background: #2a9d8f; }
     .toast.error { background: #e63946; }
 
-    .admin-modal-content { background: var(--card-bg); border-radius: 16px; padding: 20px; width: 85%; max-width: 320px; margin: auto; box-shadow: 0 10px 25px rgba(0,0,0,0.2); border: 1px solid var(--border-color); }
-    .btn-login-cancel { flex: 1; background: #64748b; color: #fff; border: none; padding: 10px; border-radius: 8px; font-size: 0.85rem; cursor: pointer; }
-    .btn-login-submit { flex: 1; background: var(--accent-color); color: #fff; border: none; padding: 10px; border-radius: 8px; font-size: 0.85rem; font-weight: 700; cursor: pointer; }
+    .admin-modal-content {
+      background: #fff;
+      border-radius: 16px;
+      padding: 20px;
+      width: 85%;
+      max-width: 320px;
+      margin: auto;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+    }
 
-    #pwaInstallBtn { display: none; }
+    .btn-login-cancel {
+      flex: 1; background: #64748b; color: #fff; border: none; padding: 10px; border-radius: 8px; font-size: 0.85rem; cursor: pointer;
+      transition: background 0.2s ease, transform 0.1s ease;
+    }
+    .btn-login-cancel:active { background: #475569; transform: scale(0.96); }
+
+    .btn-login-submit {
+      flex: 1; background: #006494; color: #fff; border: none; padding: 10px; border-radius: 8px; font-size: 0.85rem; font-weight: 700; cursor: pointer;
+      transition: background 0.2s ease, transform 0.1s ease;
+    }
+    .btn-login-submit:active { background: #004d73; transform: scale(0.96); }
   </style>
 </head>
 <body>
@@ -256,12 +321,9 @@
       <h2>🚜 MPA Registro Móvil</h2>
       <p>Control e Historial de Hallazgos</p>
     </div>
-    <div class="header-actions">
-      <button class="header-btn" id="pwaInstallBtn" onclick="instalarPWA()">📲 Instalar</button>
-      <button class="header-btn" id="btnAdmin" onclick="toggleAdminMode()">
-        <span id="adminIcon">🔒</span> <span id="adminTxt">Admin</span>
-      </button>
-    </div>
+    <button class="admin-btn" id="btnAdmin" onclick="toggleAdminMode()">
+      <span id="adminIcon">🔒</span> <span id="adminTxt">Admin</span>
+    </button>
   </div>
 
   <div class="semana-badge">
@@ -325,21 +387,15 @@
     <div class="loader">Cargando datos del registro...</div>
   </div>
 
-  <!-- MODAL PRINCIPAL -->
   <div class="modal-overlay" id="modalOverlay" onclick="cerrarModal(event)">
     <div class="modal-content" onclick="event.stopPropagation()">
       <div class="modal-header">
         <div>
-          <h2 id="modalId" style="font-size: 1.3rem;">ID: -</h2>
-          <span id="modalCat" style="font-size: 0.85rem; opacity: 0.8;">-</span>
+          <h2 id="modalId" style="font-size: 1.3rem; color: #0f172a;">ID: -</h2>
+          <span id="modalCat" style="font-size: 0.85rem; color: #64748b;">-</span>
         </div>
         <button class="close-btn" onclick="cerrarModalDirecto()">&times;</button>
       </div>
-
-      <!-- Botón WhatsApp (Solo visible al ser Admin) -->
-      <button class="btn-wsp" id="btnWspAdmin" onclick="compartirWhatsApp()">
-        <span>📱 Compartir Reporte por WhatsApp</span>
-      </button>
 
       <div id="vistaLectura">
         <div class="modal-section">
@@ -350,30 +406,14 @@
             <div class="metric-item"><span class="metric-val" id="modalProc">0</span><span class="metric-lbl">En Proceso</span></div>
             <div class="metric-item"><span class="metric-val val-danger" id="modalEsp">0</span><span class="metric-lbl">Pendientes</span></div>
           </div>
-          <div id="modalInactividad" style="margin-top: 8px; text-align: center;"></div>
         </div>
 
         <div class="modal-section">
           <div class="modal-section-title">Descripción de Hallazgos Pendientes</div>
           <div class="hallazgos-box" id="modalHallazgos">Sin hallazgos pendientes.</div>
         </div>
-
-        <div class="modal-section">
-          <div class="modal-section-title">📷 Fotografías de Evidencia</div>
-          <div class="fotos-preview-grid" id="galeriaFotosLectura">
-            <div style="font-size:0.78rem; color:#888; grid-column:span 2;">Sin fotos adjuntas.</div>
-          </div>
-        </div>
-
-        <div class="modal-section">
-          <div class="modal-section-title">📝 Bitácora de Seguimiento</div>
-          <div class="bitacora-container" id="bitacoraLectura">
-            <div style="font-size:0.78rem; color:#888;">Sin notas registradas.</div>
-          </div>
-        </div>
       </div>
 
-      <!-- VISTA ADMINISTRADOR -->
       <div id="vistaAdmin" style="display: none;">
         <input type="hidden" id="editFilaHoja">
         <input type="hidden" id="editIdMaquinaria">
@@ -396,13 +436,8 @@
           </div>
           <div class="form-group">
             <label>En Espera (Pendientes)</label>
-            <input type="number" id="editEsp" readonly style="opacity: 0.7;">
+            <input type="number" id="editEsp" readonly style="background: #f1f5f9;">
           </div>
-        </div>
-
-        <div class="form-group">
-          <label>📅 Fecha Inicio de Paro / Registro de Falla</label>
-          <input type="date" id="editFechaInicioParo">
         </div>
 
         <div class="form-group">
@@ -413,28 +448,19 @@
           </div>
         </div>
 
-        <div class="form-group">
-          <label>📸 Adjuntar Evidencia (Max 2 Fotos WebP)</label>
-          <input type="file" id="inputCamaraFotos" accept="image/*" capture="environment" multiple onchange="procesarFotosSeleccionadas(event)">
-          <div class="fotos-preview-grid" id="galeriaFotosAdmin"></div>
-        </div>
-
-        <div class="form-group">
-          <label>💬 Agregar Nueva Nota de Seguimiento</label>
-          <textarea id="editNuevaNota" rows="2" placeholder="Ej: Repuesto solicitado a bodega..."></textarea>
-        </div>
-
-        <button class="btn-save" id="btnGuardar" onclick="guardarEdicion()">💾 Guardar Cambios en Google Sheets</button>
+        <button class="btn-save" id="btnGuardar" onclick="guardarEdicion()">💾 Guardar Cambios</button>
+        
+        <!-- Botón exclusivo para Administrador -->
+        <button class="btn-whatsapp" onclick="compartirWhatsApp()">📱 Compartir reporte por WhatsApp</button>
       </div>
 
     </div>
   </div>
 
-  <!-- MODAL LOGIN ADMIN -->
   <div class="modal-overlay" id="modalLoginAdmin" style="justify-content: center; align-items: center;">
     <div class="admin-modal-content">
-      <h3 style="font-size: 1.1rem; margin-bottom: 8px; text-align: center;">Acceso Administrador</h3>
-      <p style="font-size: 0.8rem; opacity: 0.8; margin-bottom: 14px; text-align: center;">Ingresa la clave PIN para continuar</p>
+      <h3 style="font-size: 1.1rem; color: #1b3a4b; margin-bottom: 8px; text-align: center;">Acceso Administrador</h3>
+      <p style="font-size: 0.8rem; color: #64748b; margin-bottom: 14px; text-align: center;">Ingresa la clave PIN para continuar</p>
       
       <div class="form-group">
         <input type="password" id="inputPinAdmin" placeholder="PIN de acceso" style="text-align: center; font-size: 1.1rem; letter-spacing: 2px;">
@@ -456,9 +482,6 @@
     let filtroActual = 'todos';
     let esAdmin = false;
     let pinGuardado = "";
-    let itemSeleccionadoActual = null;
-    let fotosBase64Temp = [];
-    let deferredPrompt = null;
 
     window.onload = function() {
       calcularSemanaOperativa();
@@ -466,25 +489,6 @@
       verificarSesionAdminGuardada();
       cargarDatosCacheOFecha();
     };
-
-    window.addEventListener('beforeinstallprompt', (e) => {
-      e.preventDefault();
-      deferredPrompt = e;
-      document.getElementById('pwaInstallBtn').style.display = 'inline-flex';
-    });
-
-    function instalarPWA() {
-      if (deferredPrompt) {
-        deferredPrompt.prompt();
-        deferredPrompt.userChoice.then((choiceResult) => {
-          if (choiceResult.outcome === 'accepted') {
-            showToast("Instalando MPA Móvil...", "success");
-          }
-          deferredPrompt = null;
-          document.getElementById('pwaInstallBtn').style.display = 'none';
-        });
-      }
-    }
 
     function showToast(mensaje, tipo = 'info') {
       const container = document.getElementById('toastContainer');
@@ -494,6 +498,7 @@
       container.appendChild(toast);
 
       setTimeout(() => toast.classList.add('show'), 10);
+
       setTimeout(() => {
         toast.classList.remove('show');
         setTimeout(() => toast.remove(), 300);
@@ -505,8 +510,10 @@
       const baseFecha = new Date(2026, 7, 24); 
       const difTiempo = hoy.getTime() - baseFecha.getTime();
       const difSemanas = Math.floor(difTiempo / (1000 * 60 * 60 * 24 * 7));
+      
       let numSemana = 13 + difSemanas;
       if (numSemana < 1) numSemana = 1;
+
       document.getElementById('txtSemanaOperativa').innerText = `Semana Actual: #${numSemana}`;
     }
 
@@ -571,6 +578,7 @@
     function poblarSelectorFrentes() {
       const select = document.getElementById('selectFrente');
       const valorSeleccionado = select.value;
+      
       const frentesSet = new Set();
       listaGlobal.forEach(i => {
         if (i.frente && i.frente.trim() !== '') {
@@ -595,401 +603,6 @@
       el.classList.add('active');
       filtroActual = tipo;
       filtrarDatos();
-    }
-
-    function calcularInactividad(fechaInicioStr) {
-      if (!fechaInicioStr) return null;
-      
-      // Soporte para formatos YYYY-MM-DD o DD/MM/YYYY
-      let inicio;
-      if (fechaInicioStr.includes('/')) {
-        const p = fechaInicioStr.split('/');
-        inicio = new Date(p[2], p[1] - 1, p[0]);
-      } else {
-        inicio = new Date(fechaInicioStr);
-      }
-
-      if (isNaN(inicio.getTime())) return null;
-
-      const ahora = new Date();
-      const difMs = ahora - inicio;
-      if (difMs < 0) return null;
-
-      const horasTotales = Math.floor(difMs / (1000 * 60 * 60));
-      const diasTotales = Math.floor(horasTotales / 24);
-
-      if (diasTotales >= 1) {
-        return { dias: diasTotales, horas: horasTotales % 24, texto: `${diasTotales}d ${horasTotales % 24}h en taller` };
-      } else {
-        return { dias: 0, horas: horasTotales, texto: `${horasTotales}h en taller` };
-      }
-    }
-
-    function filtrarDatos() {
-      const q = document.getElementById('searchInput').value.toLowerCase().trim();
-      const frenteSel = document.getElementById('selectFrente').value;
-      const container = document.getElementById('cardsContainer');
-      container.innerHTML = '';
-
-      const filtrados = listaGlobal.filter(item => {
-        const coincideBusqueda = item.id.toLowerCase().includes(q) || 
-                                 item.categoria.toLowerCase().includes(q) || 
-                                 (item.hallazgosPend && item.hallazgosPend.toLowerCase().includes(q));
-        
-        let coincideFiltro = true;
-        if (filtroActual === 'enmpa') coincideFiltro = item.estado.includes('EN MPA');
-        else if (filtroActual === 'espera') coincideFiltro = item.estado.includes('ESPERA');
-        else if (filtroActual === 'completado') coincideFiltro = item.estado.includes('COMPLETADO');
-
-        let coincideFrente = true;
-        if (frenteSel !== 'todos') {
-          coincideFrente = item.frente && item.frente.trim() === frenteSel;
-        }
-
-        return coincideBusqueda && coincideFiltro && coincideFrente;
-      });
-
-      if (filtrados.length === 0) {
-        container.innerHTML = '<div class="empty-msg">No se encontraron registros.</div>';
-        return;
-      }
-
-      filtrados.forEach((item) => {
-        let cardClass = 'card';
-        if (item.estado.includes('EN MPA')) cardClass += ' in-mpa';
-        else if (item.enEspera > 0) cardClass += ' has-pending';
-        else if (item.estado.includes('COMPLETADO')) cardClass += ' completed';
-
-        const inactividad = calcularInactividad(item.fechaInicioParo);
-        let esSLAAtencion = false;
-        
-        if (inactividad && inactividad.dias >= 4 && item.enEspera > 0) {
-          cardClass += ' sla-atencion';
-          esSLAAtencion = true;
-        }
-
-        const card = document.createElement('div');
-        card.className = cardClass;
-        card.onclick = () => abrirModal(item);
-
-        let htmlSlaBadge = esSLAAtencion ? `<span style="background:#ef4444; color:#fff; font-size:0.65rem; padding:2px 6px; border-radius:10px; font-weight:700;">⚠️ >4 DÍAS PENDIENTE</span>` : '';
-        let htmlInactividad = inactividad ? `<div class="inactividad-tag">⏱️ ${inactividad.texto}</div>` : '';
-
-        card.innerHTML = `
-          <div class="card-header">
-            <span class="card-id">🚜 ${item.id}</span>
-            <div style="display:flex; gap:4px; align-items:center;">
-              ${htmlSlaBadge}
-              <span class="card-badge">${item.estado}</span>
-            </div>
-          </div>
-          <div class="card-category">${item.categoria} ${item.frente ? '• ' + item.frente : ''}</div>
-          <div class="metrics-grid">
-            <div class="metric-item"><span class="metric-val">${item.fallasEnc}</span><span class="metric-lbl">Hallazgos</span></div>
-            <div class="metric-item"><span class="metric-val val-success">${item.fallasRep}</span><span class="metric-lbl">Reparadas</span></div>
-            <div class="metric-item"><span class="metric-val val-danger">${item.enEspera}</span><span class="metric-lbl">Pendientes</span></div>
-            <div class="metric-item"><span class="metric-val" style="color:#006494;">${item.avance}</span><span class="metric-lbl">Avance</span></div>
-          </div>
-          ${htmlInactividad}
-        `;
-        container.appendChild(card);
-      });
-    }
-
-    function abrirModal(item) {
-      itemSeleccionadoActual = item;
-      fotosBase64Temp = item.fotos || [];
-
-      document.getElementById('modalId').innerText = 'ID: ' + item.id;
-      document.getElementById('modalCat').innerText = item.categoria + (item.frente ? ' (' + item.frente + ')' : '');
-
-      // Control de Visibilidad del botón de WhatsApp según modo Admin
-      const btnWsp = document.getElementById('btnWspAdmin');
-      btnWsp.style.display = esAdmin ? 'flex' : 'none';
-
-      const inactividad = calcularInactividad(item.fechaInicioParo);
-      const contenedorInactividad = document.getElementById('modalInactividad');
-      if (inactividad) {
-        contenedorInactividad.innerHTML = `<span class="inactividad-tag" style="font-size:0.8rem; padding:4px 8px;">⏱️ Tiempo de Paro: ${inactividad.texto}</span>`;
-      } else {
-        contenedorInactividad.innerHTML = '';
-      }
-
-      renderizarFotosLectura(fotosBase64Temp);
-      renderizarBitacoraLectura(item.bitacora || []);
-
-      if (esAdmin) {
-        document.getElementById('vistaLectura').style.display = 'none';
-        document.getElementById('vistaAdmin').style.display = 'block';
-
-        document.getElementById('editFilaHoja').value = item.filaHoja;
-        document.getElementById('editIdMaquinaria').value = item.id;
-        document.getElementById('editEnc').value = item.fallasEnc;
-        document.getElementById('editRep').value = item.fallasRep;
-        document.getElementById('editProc').value = item.enProceso;
-        document.getElementById('editEsp').value = item.enEspera;
-        document.getElementById('editFechaInicioParo').value = item.fechaInicioParo || '';
-        document.getElementById('editNuevaNota').value = '';
-
-        cargarHallazgosAdminDinamico(item.hallazgosPend);
-        renderizarFotosAdmin();
-      } else {
-        document.getElementById('vistaAdmin').style.display = 'none';
-        document.getElementById('vistaLectura').style.display = 'block';
-
-        document.getElementById('modalEnc').innerText = item.fallasEnc;
-        document.getElementById('modalRep').innerText = item.fallasRep;
-        document.getElementById('modalProc').innerText = item.enProceso;
-        document.getElementById('modalEsp').innerText = item.enEspera;
-
-        const hallazgosBox = document.getElementById('modalHallazgos');
-        if (item.hallazgosPend && item.hallazgosPend.trim() !== '') {
-          hallazgosBox.innerText = item.hallazgosPend;
-          hallazgosBox.style.background = '#fff5f5';
-          hallazgosBox.style.color = '#9b2c2c';
-        } else {
-          hallazgosBox.innerText = '✔️ Sin hallazgos pendientes registrados.';
-          hallazgosBox.style.background = '#f0fdf4';
-          hallazgosBox.style.color = '#166534';
-        }
-      }
-
-      document.getElementById('modalOverlay').classList.add('active');
-    }
-
-    function compartirWhatsApp() {
-      if (!itemSeleccionadoActual) return;
-      const i = itemSeleccionadoActual;
-      const inactividad = calcularInactividad(i.fechaInicioParo);
-      const textoInact = inactividad ? `\n⏱️ *Tiempo en Taller:* ${inactividad.texto}` : '';
-
-      let mensaje = `🚜 *REPORTE DE ESTADO MAQUINARIA MPA*\n`;
-      mensaje += `━━━━━━━━━━━━━━━━━━━━\n`;
-      mensaje += `📌 *ID:* ${i.id}\n`;
-      mensaje += `🏷️ *Categoría:* ${i.categoria}\n`;
-      mensaje += `🌾 *Frente:* ${i.frente || 'N/A'}\n`;
-      mensaje += `📊 *Estado:* ${i.estado}\n`;
-      mensaje += `📈 *Avance:* ${i.avance} (Reparadas: ${i.fallasRep}/${i.fallasEnc})${textoInact}\n\n`;
-      mensaje += `⚠️ *HALLAZGOS PENDIENTES (${i.enEspera}):*\n`;
-      mensaje += i.hallazgosPend && i.hallazgosPend.trim() !== '' ? `${i.hallazgosPend}\n` : `✔️ Sin pendientes.\n`;
-
-      const url = `https://api.whatsapp.com/send?text=${encodeURIComponent(mensaje)}`;
-      window.open(url, '_blank');
-    }
-
-    function procesarFotosSeleccionadas(event) {
-      const files = event.target.files;
-      if (!files || files.length === 0) return;
-
-      if (fotosBase64Temp.length + files.length > 2) {
-        showToast("Máximo 2 fotografías de evidencia", "error");
-        return;
-      }
-
-      Array.from(files).forEach(file => {
-        const reader = new FileReader();
-        reader.onload = function(e) {
-          const img = new Image();
-          img.onload = function() {
-            const canvas = document.createElement('canvas');
-            let width = img.width;
-            let height = img.height;
-            const MAX_WIDTH = 800;
-
-            if (width > MAX_WIDTH) {
-              height = Math.round((height * MAX_WIDTH) / width);
-              width = MAX_WIDTH;
-            }
-
-            canvas.width = width;
-            canvas.height = height;
-            const ctx = canvas.getContext('2d');
-            ctx.drawImage(img, 0, 0, width, height);
-
-            const webpBase64 = canvas.toDataURL('image/webp', 0.7);
-            fotosBase64Temp.push(webpBase64);
-            renderizarFotosAdmin();
-          };
-          img.src = e.target.result;
-        };
-        reader.readAsDataURL(file);
-      });
-    }
-
-    function renderizarFotosAdmin() {
-      const cont = document.getElementById('galeriaFotosAdmin');
-      cont.innerHTML = '';
-      fotosBase64Temp.forEach((src, idx) => {
-        const box = document.createElement('div');
-        box.className = 'foto-box';
-        box.innerHTML = `
-          <img src="${src}" alt="Evidencia">
-          <button class="btn-del-foto" onclick="eliminarFoto(${idx})">✕</button>
-        `;
-        cont.appendChild(box);
-      });
-    }
-
-    function renderizarFotosLectura(fotos) {
-      const cont = document.getElementById('galeriaFotosLectura');
-      if (!fotos || fotos.length === 0) {
-        cont.innerHTML = '<div style="font-size:0.78rem; color:#888; grid-column:span 2;">Sin fotos de evidencia adjuntas.</div>';
-        return;
-      }
-      cont.innerHTML = '';
-      fotos.forEach(src => {
-        const box = document.createElement('div');
-        box.className = 'foto-box';
-        box.innerHTML = `<img src="${src}" alt="Evidencia" onclick="window.open('${src}')">`;
-        cont.appendChild(box);
-      });
-    }
-
-    function eliminarFoto(index) {
-      fotosBase64Temp.splice(index, 1);
-      renderizarFotosAdmin();
-    }
-
-    function renderizarBitacoraLectura(notas) {
-      const cont = document.getElementById('bitacoraLectura');
-      if (!notas || notas.length === 0) {
-        cont.innerHTML = '<div style="font-size:0.78rem; color:#888;">Sin notas registradas.</div>';
-        return;
-      }
-      let html = '';
-      notas.forEach(n => {
-        html += `<div class="nota-item"><span class="nota-fecha">[${n.fecha}]:</span> ${n.texto}</div>`;
-      });
-      cont.innerHTML = html;
-    }
-
-    function cargarHallazgosAdminDinamico(textoOriginal) {
-      const container = document.getElementById('contenedorHallazgosAdmin');
-      container.innerHTML = '';
-
-      if (!textoOriginal || textoOriginal.trim() === '') {
-        agregarItemHallazgo('');
-        return;
-      }
-
-      const lineas = textoOriginal.split('\n');
-      let itemsAgregados = 0;
-
-      lineas.forEach(linea => {
-        const textoLimpio = linea.replace(/^\d+[\.\)]\s*/, '').trim();
-        if (textoLimpio !== '') {
-          agregarItemHallazgo(textoLimpio);
-          itemsAgregados++;
-        }
-      });
-
-      if (itemsAgregados === 0) {
-        agregarItemHallazgo('');
-      }
-    }
-
-    function agregarItemHallazgo(valor = '') {
-      const container = document.getElementById('contenedorHallazgosAdmin');
-      const row = document.createElement('div');
-      row.className = 'hallazgo-item-row';
-      
-      row.innerHTML = `
-        <span class="num-lbl">1.</span>
-        <input type="text" value="${valor.replace(/"/g, '&quot;')}" placeholder="Escribe el aviso u observación...">
-        <button type="button" class="btn-del-item" onclick="eliminarItemHallazgo(this)">🗑️</button>
-      `;
-
-      container.appendChild(row);
-      reordenarNumerosHallazgos();
-    }
-
-    function eliminarItemHallazgo(btn) {
-      const row = btn.closest('.hallazgo-item-row');
-      row.remove();
-      reordenarNumerosHallazgos();
-    }
-
-    function reordenarNumerosHallazgos() {
-      const rows = document.querySelectorAll('#contenedorHallazgosAdmin .hallazgo-item-row');
-      rows.forEach((row, idx) => {
-        const lbl = row.querySelector('.num-lbl');
-        if (lbl) lbl.innerText = `${idx + 1}.`;
-      });
-    }
-
-    function obtenerTextoHallazgosFormateado() {
-      const inputs = document.querySelectorAll('#contenedorHallazgosAdmin .hallazgo-item-row input');
-      const avisos = [];
-
-      inputs.forEach(inp => {
-        const txt = inp.value.trim();
-        if (txt !== '') avisos.push(txt);
-      });
-
-      if (avisos.length === 0) return '';
-      return avisos.map((aviso, idx) => `${idx + 1}. ${aviso}`).join('\n');
-    }
-
-    function recalcularPendientes() {
-      const enc = Number(document.getElementById('editEnc').value) || 0;
-      const rep = Number(document.getElementById('editRep').value) || 0;
-      const esp = Math.max(0, enc - rep);
-      document.getElementById('editEsp').value = esp;
-    }
-
-    function guardarEdicion() {
-      const btn = document.getElementById('btnGuardar');
-      btn.disabled = true;
-      btn.innerText = '⏳ Guardando...';
-
-      const hallazgosFormateados = obtenerTextoHallazgosFormateado();
-      const nuevaNota = document.getElementById('editNuevaNota').value.trim();
-      const fechaParoInput = document.getElementById('editFechaInicioParo').value;
-
-      const datosAdmin = {
-        action: 'actualizarHallazgos',
-        pin: pinGuardado,
-        filaHoja: document.getElementById('editFilaHoja').value,
-        idMaquinaria: document.getElementById('editIdMaquinaria').value,
-        fallasEnc: document.getElementById('editEnc').value,
-        fallasRep: document.getElementById('editRep').value,
-        enProceso: document.getElementById('editProc').value,
-        enEspera: document.getElementById('editEsp').value,
-        hallazgosPend: hallazgosFormateados,
-        fechaInicioParo: fechaParoInput,
-        fotos: fotosBase64Temp,
-        nuevaNotaBitacora: nuevaNota
-      };
-
-      fetch(WEB_APP_URL, {
-        method: 'POST',
-        body: JSON.stringify(datosAdmin)
-      })
-      .then(res => res.json())
-      .then(res => {
-        btn.disabled = false;
-        btn.innerText = '💾 Guardar Cambios';
-        showToast(res.mensaje, res.exito ? "success" : "error");
-        if (res.exito) {
-          // Actualización local inmediata de la bitácora y fecha de paro
-          if (itemSeleccionadoActual) {
-            itemSeleccionadoActual.fechaInicioParo = fechaParoInput;
-            if (nuevaNota !== '') {
-              if (!itemSeleccionadoActual.bitacora) itemSeleccionadoActual.bitacora = [];
-              const hoy = new Date();
-              const fechaStr = `${hoy.getDate()}/${hoy.getMonth() + 1}/${hoy.getFullYear().toString().substr(-2)}`;
-              itemSeleccionadoActual.bitacora.unshift({ fecha: fechaStr, texto: nuevaNota });
-            }
-          }
-          cerrarModalDirecto();
-          cargarDatos();
-        }
-      })
-      .catch(err => {
-        btn.disabled = false;
-        btn.innerText = '💾 Guardar Cambios';
-        showToast("Error: " + err.message, "error");
-      });
     }
 
     function toggleAdminMode() {
@@ -1089,6 +702,7 @@
       const reader = new FileReader();
       reader.onload = function(e) {
         const base64 = e.target.result;
+        
         fetch(WEB_APP_URL, {
           method: 'POST',
           body: JSON.stringify({ action: 'guardarImagenFondo', bg: base64, pin: pinGuardado })
@@ -1105,7 +719,7 @@
             showToast(res.mensaje || "Error al sincronizar fondo", "error");
           }
         })
-        .catch(() => {
+        .catch(err => {
           btn.innerText = 'Aplicar para Todos';
           btn.disabled = false;
           showToast("Error de conexión al subir la imagen", "error");
@@ -1124,7 +738,7 @@
         body: JSON.stringify({ action: 'guardarImagenFondo', bg: '', pin: pinGuardado })
       })
       .then(res => res.json())
-      .then(() => {
+      .then(res => {
         btn.innerText = 'Quitar Imagen';
         btn.disabled = false;
         document.body.style.backgroundImage = 'none';
@@ -1140,7 +754,9 @@
 
     function cargarFondoGuardado() {
       const localBg = localStorage.getItem('mpa_bg_image');
-      if (localBg) document.body.style.backgroundImage = `url('${localBg}')`;
+      if (localBg) {
+        document.body.style.backgroundImage = `url('${localBg}')`;
+      }
 
       fetch(`${WEB_APP_URL}?action=getImagenFondo`)
         .then(res => res.json())
@@ -1152,7 +768,248 @@
             document.body.style.backgroundImage = 'none';
             localStorage.removeItem('mpa_bg_image');
           }
-        }).catch(() => console.log("Sin foto de fondo externa."));
+        }).catch(err => console.log("Sin foto de fondo externa."));
+    }
+
+    function filtrarDatos() {
+      const q = document.getElementById('searchInput').value.toLowerCase().trim();
+      const frenteSel = document.getElementById('selectFrente').value;
+      const container = document.getElementById('cardsContainer');
+      container.innerHTML = '';
+
+      const filtrados = listaGlobal.filter(item => {
+        const coincideBusqueda = item.id.toLowerCase().includes(q) || 
+                                 item.categoria.toLowerCase().includes(q) || 
+                                 item.hallazgosPend.toLowerCase().includes(q);
+        
+        let coincideFiltro = true;
+        if (filtroActual === 'enmpa') coincideFiltro = item.estado.includes('EN MPA');
+        else if (filtroActual === 'espera') coincideFiltro = item.estado.includes('ESPERA');
+        else if (filtroActual === 'completado') coincideFiltro = item.estado.includes('COMPLETADO');
+
+        let coincideFrente = true;
+        if (frenteSel !== 'todos') {
+          coincideFrente = item.frente && item.frente.trim() === frenteSel;
+        }
+
+        return coincideBusqueda && coincideFiltro && coincideFrente;
+      });
+
+      if (filtrados.length === 0) {
+        container.innerHTML = '<div class="empty-msg">No se encontraron registros.</div>';
+        return;
+      }
+
+      filtrados.forEach((item) => {
+        let cardClass = 'card';
+        if (item.estado.includes('EN MPA')) cardClass += ' in-mpa';
+        else if (item.enEspera > 0) cardClass += ' has-pending';
+        else if (item.estado.includes('COMPLETADO')) cardClass += ' completed';
+
+        const card = document.createElement('div');
+        card.className = cardClass;
+        card.onclick = () => abrirModal(item);
+
+        card.innerHTML = `
+          <div class="card-header">
+            <span class="card-id">🚜 ${item.id}</span>
+            <span class="card-badge">${item.estado}</span>
+          </div>
+          <div class="card-category">${item.categoria} ${item.frente ? '• ' + item.frente : ''}</div>
+          <div class="metrics-grid">
+            <div class="metric-item"><span class="metric-val">${item.fallasEnc}</span><span class="metric-lbl">Hallazgos</span></div>
+            <div class="metric-item"><span class="metric-val val-success">${item.fallasRep}</span><span class="metric-lbl">Reparadas</span></div>
+            <div class="metric-item"><span class="metric-val val-danger">${item.enEspera}</span><span class="metric-lbl">Pendientes</span></div>
+            <div class="metric-item"><span class="metric-val" style="color:#006494;">${item.avance}</span><span class="metric-lbl">Avance</span></div>
+          </div>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    function abrirModal(item) {
+      document.getElementById('modalId').innerText = 'ID: ' + item.id;
+      document.getElementById('modalCat').innerText = item.categoria + (item.frente ? ' (' + item.frente + ')' : '');
+
+      if (esAdmin) {
+        document.getElementById('vistaLectura').style.display = 'none';
+        document.getElementById('vistaAdmin').style.display = 'block';
+
+        document.getElementById('editFilaHoja').value = item.filaHoja;
+        document.getElementById('editIdMaquinaria').value = item.id;
+        document.getElementById('editEnc').value = item.fallasEnc;
+        document.getElementById('editRep').value = item.fallasRep;
+        document.getElementById('editProc').value = item.enProceso;
+        document.getElementById('editEsp').value = item.enEspera;
+        
+        cargarHallazgosAdminDinamico(item.hallazgosPend);
+      } else {
+        document.getElementById('vistaAdmin').style.display = 'none';
+        document.getElementById('vistaLectura').style.display = 'block';
+
+        document.getElementById('modalEnc').innerText = item.fallasEnc;
+        document.getElementById('modalRep').innerText = item.fallasRep;
+        document.getElementById('modalProc').innerText = item.enProceso;
+        document.getElementById('modalEsp').innerText = item.enEspera;
+
+        const hallazgosBox = document.getElementById('modalHallazgos');
+        if (item.hallazgosPend && item.hallazgosPend.trim() !== '') {
+          hallazgosBox.innerText = item.hallazgosPend;
+          hallazgosBox.style.background = '#fff5f5';
+          hallazgosBox.style.color = '#9b2c2c';
+        } else {
+          hallazgosBox.innerText = '✔️ Sin hallazgos pendientes registrados.';
+          hallazgosBox.style.background = '#f0fdf4';
+          hallazgosBox.style.color = '#166534';
+        }
+      }
+
+      document.getElementById('modalOverlay').classList.add('active');
+    }
+
+    function cargarHallazgosAdminDinamico(textoOriginal) {
+      const container = document.getElementById('contenedorHallazgosAdmin');
+      container.innerHTML = '';
+
+      if (!textoOriginal || textoOriginal.trim() === '') {
+        agregarItemHallazgo('');
+        return;
+      }
+
+      const lineas = textoOriginal.split('\n');
+      let itemsAgregados = 0;
+
+      lineas.forEach(linea => {
+        const textoLimpio = linea.replace(/^\d+[\.\)]\s*/, '').trim();
+        if (textoLimpio !== '') {
+          agregarItemHallazgo(textoLimpio);
+          itemsAgregados++;
+        }
+      });
+
+      if (itemsAgregados === 0) {
+        agregarItemHallazgo('');
+      }
+    }
+
+    function agregarItemHallazgo(valor = '') {
+      const container = document.getElementById('contenedorHallazgosAdmin');
+      const row = document.createElement('div');
+      row.className = 'hallazgo-item-row';
+      
+      row.innerHTML = `
+        <span class="num-lbl">1.</span>
+        <input type="text" value="${valor.replace(/"/g, '&quot;')}" placeholder="Escribe el aviso u observación...">
+        <button type="button" class="btn-del-item" onclick="eliminarItemHallazgo(this)">🗑️</button>
+      `;
+
+      container.appendChild(row);
+      reordenarNumerosHallazgos();
+    }
+
+    function eliminarItemHallazgo(btn) {
+      const row = btn.closest('.hallazgo-item-row');
+      row.remove();
+      reordenarNumerosHallazgos();
+    }
+
+    function reordenarNumerosHallazgos() {
+      const rows = document.querySelectorAll('#contenedorHallazgosAdmin .hallazgo-item-row');
+      rows.forEach((row, idx) => {
+        const lbl = row.querySelector('.num-lbl');
+        if (lbl) lbl.innerText = `${idx + 1}.`;
+      });
+    }
+
+    function obtenerTextoHallazgosFormateado() {
+      const inputs = document.querySelectorAll('#contenedorHallazgosAdmin .hallazgo-item-row input');
+      const avisos = [];
+
+      inputs.forEach(inp => {
+        const txt = inp.value.trim();
+        if (txt !== '') {
+          avisos.push(txt);
+        }
+      });
+
+      if (avisos.length === 0) return '';
+      
+      return avisos.map((aviso, idx) => `${idx + 1}. ${aviso}`).join('\n');
+    }
+
+    function recalcularPendientes() {
+      const enc = Number(document.getElementById('editEnc').value) || 0;
+      const rep = Number(document.getElementById('editRep').value) || 0;
+      const esp = Math.max(0, enc - rep);
+      document.getElementById('editEsp').value = esp;
+    }
+
+    function guardarEdicion() {
+      const btn = document.getElementById('btnGuardar');
+      btn.disabled = true;
+      btn.innerText = '⏳ Guardando...';
+
+      const hallazgosFormateados = obtenerTextoHallazgosFormateado();
+
+      const datosAdmin = {
+        action: 'actualizarHallazgos',
+        pin: pinGuardado,
+        filaHoja: document.getElementById('editFilaHoja').value,
+        idMaquinaria: document.getElementById('editIdMaquinaria').value,
+        fallasEnc: document.getElementById('editEnc').value,
+        fallasRep: document.getElementById('editRep').value,
+        enProceso: document.getElementById('editProc').value,
+        enEspera: document.getElementById('editEsp').value,
+        hallazgosPend: hallazgosFormateados
+      };
+
+      fetch(WEB_APP_URL, {
+        method: 'POST',
+        body: JSON.stringify(datosAdmin)
+      })
+      .then(res => res.json())
+      .then(res => {
+        btn.disabled = false;
+        btn.innerText = '💾 Guardar Cambios';
+        showToast(res.mensaje, res.exito ? "success" : "error");
+        if (res.exito) {
+          cerrarModalDirecto();
+          cargarDatos();
+        }
+      })
+      .catch(err => {
+        btn.disabled = false;
+        btn.innerText = '💾 Guardar Cambios';
+        showToast("Error: " + err.message, "error");
+      });
+    }
+
+    /* Función exclusiva de administración para compartir vía WhatsApp */
+    function compartirWhatsApp() {
+      const id = document.getElementById('editIdMaquinaria').value;
+      const categoria = document.getElementById('modalCat').innerText;
+      const enc = document.getElementById('editEnc').value || '0';
+      const rep = document.getElementById('editRep').value || '0';
+      const proc = document.getElementById('editProc').value || '0';
+      const esp = document.getElementById('editEsp').value || '0';
+      const hallazgos = obtenerTextoHallazgosFormateado();
+
+      let mensaje = `*📌 REPORTE DE MAQUINARIA MPA*\n`;
+      mensaje += `🚜 *Equipo:* ${id}\n`;
+      mensaje += `*📊 Resumen de Estado:*\n`;
+      mensaje += `• Encontradas: ${enc}\n`;
+      mensaje += `• Reparadas: ${rep}\n`;
+      mensaje += `• En Proceso: ${proc}\n`;
+      mensaje += `• Pendientes: ${esp}\n\n`;
+      
+      if (hallazgos.trim() !== '') {
+        mensaje += `*⚠️ Detalle de Pendientes:*\n${hallazgos}`;
+      } else {
+        mensaje += `*✔️ Sin hallazgos pendientes.*`;
+      }
+
+      const url = `https://api.whatsapp.com/send?text=${encodeURIComponent(mensaje)}`;
+      window.open(url, '_blank');
     }
 
     function cerrarModal(e) {
