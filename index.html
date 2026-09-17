@@ -165,7 +165,6 @@
       font-size: 0.9rem; outline: none;
     }
 
-    /* Lista Interactiva de Hallazgos en Admin */
     .hallazgos-dynamic-container {
       border: 1px solid #cbd5e1;
       border-radius: 10px;
@@ -292,7 +291,6 @@
       box-shadow: 0 10px 25px rgba(0,0,0,0.2);
     }
 
-    /* Estilos dinámicos para los botones en modal Login Admin */
     .btn-login-cancel {
       flex: 1; background: #64748b; color: #fff; border: none; padding: 10px; border-radius: 8px; font-size: 0.85rem; cursor: pointer;
       transition: background 0.2s ease, transform 0.1s ease;
@@ -338,12 +336,12 @@
       </div>
 
       <details>
-        <summary>🖼️ Personalizar Foto de Fondo</summary>
+        <summary>🖼️ Personalizar Foto de Fondo Global</summary>
         <div style="padding-top: 10px;">
           <input type="file" id="inputBgFile" accept="image/*" style="font-size: 0.8rem; margin-bottom: 8px;">
           <div style="display: flex; gap: 8px;">
-            <button class="btn-secondary" onclick="subirFotoFondo()">Aplicar Imagen</button>
-            <button class="btn-danger-sm" onclick="quitarFotoFondo()">Quitar Imagen</button>
+            <button class="btn-secondary" id="btnSubirFondo" onclick="subirFotoFondo()">Aplicar para Todos</button>
+            <button class="btn-danger-sm" id="btnQuitarFondo" onclick="quitarFotoFondo()">Quitar Imagen</button>
           </div>
         </div>
       </details>
@@ -357,7 +355,6 @@
     </div>
   </div>
 
-  <!-- Desplegable para Filtrar por Frente -->
   <div class="frente-select-box">
     <select id="selectFrente" onchange="filtrarDatos()">
       <option value="todos">🌾 Todos los Frentes</option>
@@ -507,7 +504,6 @@
       document.getElementById('txtSemanaOperativa').innerText = `Semana Actual: #${numSemana}`;
     }
 
-    // Verificar si la sesión de Admin fue guardada previamente
     function verificarSesionAdminGuardada() {
       const pinSesion = localStorage.getItem('mpa_admin_pin');
       if (pinSesion) {
@@ -526,7 +522,6 @@
       cargarHistorial();
     }
 
-    // Carga ultra rápida mediante Cache + Actualización silenciosa
     function cargarDatosCacheOFecha() {
       const cachedData = localStorage.getItem('mpa_registros_cache');
       if (cachedData) {
@@ -542,7 +537,6 @@
       fetch(`${WEB_APP_URL}?action=getDatosRegistro`)
         .then(res => res.json())
         .then(datos => {
-          // Omitir TANQUE DE AGUA 500 GLS
           const filtradosLimpios = (datos || []).filter(item => 
             !item.categoria.toUpperCase().includes("TANQUE DE AGUA 500 GLS") &&
             !item.id.toUpperCase().includes("TANQUE DE AGUA")
@@ -605,7 +599,7 @@
       } else {
         esAdmin = false;
         pinGuardado = "";
-        localStorage.removeItem('mpa_admin_pin'); // Elimina sesión persistente
+        localStorage.removeItem('mpa_admin_pin');
         document.getElementById('btnAdmin').classList.remove('active');
         document.getElementById('adminIcon').innerText = '🔒';
         document.getElementById('adminTxt').innerText = 'Admin';
@@ -631,7 +625,7 @@
           if (esCorrecto) {
             esAdmin = true;
             pinGuardado = pin;
-            localStorage.setItem('mpa_admin_pin', pin); // Guarda sesión de admin en el navegador
+            localStorage.setItem('mpa_admin_pin', pin);
             cerrarModalLoginAdmin();
             activarInterfazAdmin();
             showToast("Modo Administrador Activado", "success");
@@ -686,47 +680,83 @@
         showToast("Selecciona una imagen primero", "error");
         return;
       }
+
+      const btn = document.getElementById('btnSubirFondo');
+      btn.innerText = 'Subiendo...';
+      btn.disabled = true;
+
       const file = fileInput.files[0];
       const reader = new FileReader();
       reader.onload = function(e) {
         const base64 = e.target.result;
-        document.body.style.backgroundImage = `url('${base64}')`;
-        localStorage.setItem('mpa_bg_image', base64); // Guardar localmente de forma persistente
         
+        // Enviar a Google Apps Script para sincronizar en la nube (Servidor Global)
         fetch(WEB_APP_URL, {
           method: 'POST',
-          body: JSON.stringify({ action: 'guardarImagenFondo', bg: base64 })
-        }).then(() => showToast("Foto de fondo aplicada", "success"))
-          .catch(() => showToast("Guardado localmente", "success"));
+          body: JSON.stringify({ action: 'guardarImagenFondo', bg: base64, pin: pinGuardado })
+        })
+        .then(res => res.json())
+        .then(res => {
+          btn.innerText = 'Aplicar para Todos';
+          btn.disabled = false;
+          if (res.exito || res.status === 'success') {
+            document.body.style.backgroundImage = `url('${base64}')`;
+            localStorage.setItem('mpa_bg_image', base64);
+            showToast("Imagen de fondo sincronizada en todos los dispositivos", "success");
+          } else {
+            showToast(res.mensaje || "Error al sincronizar fondo", "error");
+          }
+        })
+        .catch(err => {
+          btn.innerText = 'Aplicar para Todos';
+          btn.disabled = false;
+          showToast("Error de conexión al subir la imagen", "error");
+        });
       };
       reader.readAsDataURL(file);
     }
 
     function quitarFotoFondo() {
-      document.body.style.backgroundImage = 'none';
-      localStorage.removeItem('mpa_bg_image'); // Eliminar imagen de fondo local
-      
+      const btn = document.getElementById('btnQuitarFondo');
+      btn.innerText = 'Quitando...';
+      btn.disabled = true;
+
       fetch(WEB_APP_URL, {
         method: 'POST',
-        body: JSON.stringify({ action: 'guardarImagenFondo', bg: '' })
-      }).then(() => showToast("Fondo restablecido", "info"));
+        body: JSON.stringify({ action: 'guardarImagenFondo', bg: '', pin: pinGuardado })
+      })
+      .then(res => res.json())
+      .then(res => {
+        btn.innerText = 'Quitar Imagen';
+        btn.disabled = false;
+        document.body.style.backgroundImage = 'none';
+        localStorage.removeItem('mpa_bg_image');
+        showToast("Fondo eliminado para todos los dispositivos", "info");
+      })
+      .catch(() => {
+        btn.innerText = 'Quitar Imagen';
+        btn.disabled = false;
+        showToast("Error al quitar el fondo", "error");
+      });
     }
 
     function cargarFondoGuardado() {
-      // Prioridad 1: Fondo guardado en el navegador local
+      // 1. Mostrar la versión en caché local para arranque instantáneo
       const localBg = localStorage.getItem('mpa_bg_image');
       if (localBg) {
         document.body.style.backgroundImage = `url('${localBg}')`;
-        return;
       }
 
-      // Prioridad 2: Respaldo en la nube (Google Apps Script)
+      // 2. Consultar al servidor global de Google Apps Script para estar sincronizados
       fetch(`${WEB_APP_URL}?action=getImagenFondo`)
         .then(res => res.json())
         .then(bg => {
           if (bg && bg.trim() !== '') {
             document.body.style.backgroundImage = `url('${bg}')`;
             localStorage.setItem('mpa_bg_image', bg);
+          } else {
+            document.body.style.backgroundImage = 'none';
+            localStorage.removeItem('mpa_bg_image');
           }
         }).catch(err => console.log("Sin foto de fondo externa."));
     }
@@ -827,7 +857,6 @@
       document.getElementById('modalOverlay').classList.add('active');
     }
 
-    // Funciones de Lista Dinámica de Avisos en Administración
     function cargarHallazgosAdminDinamico(textoOriginal) {
       const container = document.getElementById('contenedorHallazgosAdmin');
       container.innerHTML = '';
@@ -837,7 +866,6 @@
         return;
       }
 
-      // Separa líneas numeradas o divididas por salto de línea
       const lineas = textoOriginal.split('\n');
       let itemsAgregados = 0;
 
