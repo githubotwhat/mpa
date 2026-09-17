@@ -1041,34 +1041,27 @@
       });
     }
 
-    function compartirWhatsApp() {
-      if (!itemSeleccionadoActual) return;
+    function compartirWhatsApp(id, frente, estado, avancePorcentaje, reparadas, total, hallazgosArray) {
+  // Construir la lista de hallazgos numerada
+  let listaHallazgos = hallazgosArray.map((h, index) => `${index + 1}. ${h}`).join('\n');
 
-      const hoy = new Date();
-      const fechaFormateada = hoy.toLocaleDateString('es-ES', {
-        day: '2-digit', month: '2-digit', year: 'numeric'
-      });
+  // Armar el mensaje con la estructura requerida
+  let mensaje = `🚜 *REPORTE DE MAQUINARIA CON MPA*\n` +
+    `━━━━━━━━━━━━━━━━━━━━\n` +
+    `*Fecha:* ${fechaFormateada}\n` +
+    `📌 *ID:* ${id}\n` +
+    `🌾 *Frente:* ${frente}\n` +
+    `📊 *Estado:* ${estado}\n` +
+    `📈 *Avance:* ${avancePorcentaje}% (Reparadas: ${reparadas}/${total})\n\n` +
+    `⚠️ *HALLAZGOS PENDIENTES (${hallazgosArray.length}):*\n` +
+    `${listaHallazgos}`;
 
-      const enc = document.getElementById('editEnc').value || '0';
-      const rep = document.getElementById('editRep').value || '0';
-      const esp = document.getElementById('editEsp').value || '0';
-      const idMaquina = itemSeleccionadoActual.id;
-      const hallazgosTxt = obtenerTextoHallazgosFormateado() || 'Sin hallazgos pendientes.';
+  // Codificar el texto para URL
+  let mensajeURL = encodeURIComponent(mensaje);
 
-      const mensaje = `📌 *ESTADO DE MAQUINARIA - MPA*
-📅 *Fecha:* ${fechaFormateada}
-🚜 *ID Máquina:* ${idMaquina}
-
-🔍 *Hallazgos Encontrados:* ${enc}
-✅ *Hallazgos Reparados:* ${rep}
-⏳ *Hallazgos en Espera:* ${esp}
-
-📋 *Descripción de Hallazgos Pendientes:*
-${hallazgosTxt}`;
-
-      const url = `https://api.whatsapp.com/send?text=${encodeURIComponent(mensaje)}`;
-      window.open(url, '_blank');
-    }
+  // Abrir WhatsApp
+  window.open(`https://api.whatsapp.com/send?text=${mensajeURL}`, '_blank');
+}
 
     function cerrarModal(e) {
       if (e.target.id === 'modalOverlay') cerrarModalDirecto();
