@@ -1,0 +1,1090 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>MPA Registro Móvil</title>
+  
+  <!-- Enlace al Manifest -->
+  <link rel="manifest" href="./manifest.json">
+  <meta name="theme-color" content="#1b3a4b">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <link rel="icon" type="image/png" sizes="192x192" href="./icon-192.png">
+
+  <!-- Fuentes -->
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+
+  <!-- Registro del Service Worker -->
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./service-worker.js')
+          .then(registration => {
+            console.log('[MPA] Service Worker registrado correctamente:', registration.scope);
+          })
+          .catch(error => {
+            console.error('[MPA] Error al registrar Service Worker:', error);
+          });
+      });
+    }
+  </script>
+
+  <style>
+    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; margin: 0; padding: 0; font-family: 'Roboto', sans-serif; }
+    body { 
+      background-color: #f4f6f9; 
+      color: #333; 
+      padding-bottom: 30px; 
+      background-size: cover; 
+      background-position: center; 
+      background-attachment: fixed;
+      transition: background 0.3s ease;
+    }
+
+    .app-header {
+      position: sticky; top: 0; z-index: 100;
+      background: linear-gradient(135deg, #1b3a4b, #006494);
+      color: #fff; padding: 14px 16px; text-align: center;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      border-bottom-left-radius: 16px; border-bottom-right-radius: 16px;
+      display: flex; justify-content: space-between; align-items: center;
+    }
+    .header-title h2 { font-size: 1.1rem; font-weight: 700; text-align: left; }
+    .header-title p { font-size: 0.72rem; opacity: 0.85; margin-top: 2px; text-align: left; }
+    
+    .admin-btn {
+      background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.4);
+      color: #fff; padding: 6px 12px; border-radius: 20px; font-size: 0.75rem;
+      font-weight: 500; cursor: pointer; display: flex; align-items: center; gap: 4px;
+      transition: all 0.2s ease;
+    }
+    .admin-btn:active { transform: scale(0.95); }
+    .admin-btn.active { background: #2a9d8f; border-color: #2a9d8f; }
+
+    .semana-badge {
+      background: #006494; color: #fff; text-align: center; font-size: 0.78rem; font-weight: 700;
+      padding: 6px 12px; margin: 8px 16px 0 16px; border-radius: 8px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.08); display: flex; justify-content: space-between; align-items: center;
+    }
+
+    /* Selector por Frente */
+    .frente-select-box {
+      margin: 10px 16px 0 16px;
+    }
+    .frente-select-box select {
+      width: 100%;
+      padding: 10px 14px;
+      border: 1px solid #cbd5e1;
+      border-radius: 12px;
+      font-size: 0.88rem;
+      font-weight: 600;
+      color: #1b3a4b;
+      background: #fff;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+      outline: none;
+    }
+
+    .search-box { margin: 8px 16px 8px 16px; position: relative; }
+    .search-box input {
+      width: 100%; padding: 12px 16px 12px 42px;
+      border: 1px solid #dcdfe6; border-radius: 25px;
+      font-size: 0.92rem; background-color: rgba(255,255,255,0.92);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05); outline: none;
+    }
+    .search-icon { position: absolute; left: 15px; top: 50%; transform: translateY(-50%); font-size: 1.1rem; color: #888; }
+
+    .filter-chips { display: flex; gap: 8px; padding: 0 16px 12px 16px; overflow-x: auto; scrollbar-width: none; }
+    .filter-chips::-webkit-scrollbar { display: none; }
+    .chip { padding: 8px 14px; border-radius: 20px; background: rgba(224,230,237,0.9); color: #4a5568; font-size: 0.8rem; font-weight: 500; white-space: nowrap; cursor: pointer; }
+    .chip.active { background: #006494; color: #fff; }
+
+    .cards-container { padding: 0 16px; display: flex; flex-direction: column; gap: 12px; }
+    
+    .card {
+      background: rgba(255,255,255,0.95); border-radius: 14px; padding: 14px 16px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08); border-left: 5px solid #cbd5e1; cursor: pointer;
+      backdrop-filter: blur(4px);
+      position: relative;
+    }
+    .card.has-pending { border-left-color: #e63946; }
+    .card.completed { border-left-color: #2a9d8f; }
+    .card.in-mpa { border-left-color: #f59e0b; }
+
+    .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
+    .card-id { font-size: 1.1rem; font-weight: 700; color: #1e293b; }
+    .card-badge { font-size: 0.72rem; padding: 4px 8px; border-radius: 12px; font-weight: 600; background: #f1f5f9; color: #475569; }
+    .card-category { font-size: 0.85rem; color: #64748b; margin-bottom: 10px; }
+
+    .metrics-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; background: #f8fafc; padding: 8px; border-radius: 10px; text-align: center; }
+    .metric-item { display: flex; flex-direction: column; }
+    .metric-val { font-size: 0.95rem; font-weight: 700; }
+    .metric-lbl { font-size: 0.65rem; color: #64748b; margin-top: 2px; }
+
+    .val-danger { color: #e63946; }
+    .val-success { color: #2a9d8f; }
+
+    /* Indicador de Alerta y Tiempos */
+    .time-tracker-badge {
+      display: flex; gap: 6px; flex-wrap: wrap; margin-top: 8px; font-size: 0.7rem; font-weight: 600;
+    }
+    .time-pill {
+      padding: 3px 8px; border-radius: 10px; background: #e2e8f0; color: #334155;
+    }
+    .alert-pill {
+      background: #fee2e2; color: #991b1b; border: 1px solid #fca5a5;
+    }
+
+    .modal-overlay {
+      position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.5); display: none; justify-content: flex-end; flex-direction: column; z-index: 1000;
+    }
+    .modal-overlay.active { display: flex; }
+    .modal-content {
+      background: #fff; border-top-left-radius: 20px; border-top-right-radius: 20px;
+      padding: 20px; max-height: 90vh; overflow-y: auto;
+    }
+    .modal-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #e2e8f0; padding-bottom: 12px; margin-bottom: 16px; }
+    .close-btn { font-size: 1.5rem; background: none; border: none; color: #64748b; cursor: pointer; }
+    .modal-section { margin-bottom: 16px; }
+    .modal-section-title { font-size: 0.85rem; font-weight: 700; color: #1b3a4b; text-transform: uppercase; margin-bottom: 8px; }
+    
+    .hallazgos-box {
+      background: #fff5f5; border: 1px solid #fed7d7; border-radius: 10px;
+      padding: 12px; font-size: 0.88rem; color: #9b2c2c; white-space: pre-wrap; line-height: 1.45;
+      min-height: 120px; max-height: 250px; overflow-y: auto;
+    }
+
+    .admin-panel { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 14px; margin-bottom: 16px; }
+    .admin-title { font-size: 1rem; font-weight: 700; color: #1b3a4b; display: flex; justify-content: space-between; align-items: center; }
+    
+    .toggle-panel-btn {
+      background: #cbd5e1; border: none; padding: 4px 8px; border-radius: 6px; font-size: 0.75rem; cursor: pointer; color: #1e293b; font-weight: 600;
+    }
+
+    .dash-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-top: 10px; margin-bottom: 12px; }
+    .dash-card { background: #fff; padding: 10px; border-radius: 10px; border-left: 4px solid #006494; box-shadow: 0 1px 4px rgba(0,0,0,0.05); }
+    .dash-card .num { font-size: 1.3rem; font-weight: 700; color: #1b3a4b; }
+    .dash-card .txt { font-size: 0.72rem; color: #64748b; }
+
+    details { background: #fff; border: 1px solid #cbd5e1; border-radius: 8px; padding: 8px 12px; margin-bottom: 8px; }
+    summary { font-size: 0.85rem; font-weight: 600; cursor: pointer; color: #1b3a4b; outline: none; }
+    
+    .historial-list { max-height: 160px; overflow-y: auto; margin-top: 8px; font-size: 0.78rem; }
+    .historial-item { padding: 6px 0; border-bottom: 1px dashed #e2e8f0; color: #475569; }
+
+    .form-group { margin-bottom: 12px; }
+    .form-group label { display: block; font-size: 0.8rem; font-weight: 600; color: #475569; margin-bottom: 4px; }
+    .form-group input {
+      width: 100%; padding: 10px 12px; border: 1px solid #cbd5e1; border-radius: 8px;
+      font-size: 0.9rem; outline: none;
+    }
+
+    .hallazgos-dynamic-container {
+      border: 1px solid #cbd5e1;
+      border-radius: 10px;
+      padding: 10px;
+      background: #f8fafc;
+      max-height: 250px;
+      overflow-y: auto;
+    }
+    .hallazgo-item-row {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 8px;
+    }
+    .hallazgo-item-row span {
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: #1b3a4b;
+      min-width: 22px;
+    }
+    .hallazgo-item-row input {
+      flex: 1;
+      padding: 8px 10px;
+      border: 1px solid #cbd5e1;
+      border-radius: 6px;
+      font-size: 0.85rem;
+      outline: none;
+    }
+    .btn-del-item {
+      background: #ef4444; color: #fff; border: none; border-radius: 6px; padding: 8px 10px; font-size: 0.8rem; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: background 0.2s ease;
+    }
+    .btn-del-item:active { background: #dc2626; }
+    .btn-add-item {
+      background: #2a9d8f; color: #fff; border: none; padding: 8px 12px; border-radius: 6px; font-size: 0.8rem; font-weight: 600; cursor: pointer; margin-top: 6px; display: inline-flex; align-items: center; gap: 4px; transition: background 0.2s ease;
+    }
+    .btn-add-item:active { background: #218376; }
+
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+
+    .btn-save {
+      width: 100%; background: #006494; color: #fff; border: none; padding: 14px;
+      border-radius: 10px; font-size: 0.95rem; font-weight: 700; cursor: pointer; margin-top: 8px;
+      transition: background 0.2s ease, transform 0.1s ease;
+    }
+    .btn-save:active { background: #004d73; transform: scale(0.98); }
+    .btn-save:disabled { background: #94a3b8; transform: none; }
+
+    .btn-whatsapp {
+      width: 100%; background: #25D366; color: #fff; border: none; padding: 12px;
+      border-radius: 10px; font-size: 0.9rem; font-weight: 700; cursor: pointer; margin-top: 8px;
+      display: flex; justify-content: center; align-items: center; gap: 6px;
+      transition: background 0.2s ease, transform 0.1s ease;
+    }
+    .btn-whatsapp:active { background: #1da851; transform: scale(0.98); }
+
+    .btn-secondary { 
+      background: #64748b; color: #fff; border: none; padding: 8px 12px; border-radius: 6px; font-size: 0.8rem; cursor: pointer;
+      transition: background 0.2s ease, transform 0.1s ease;
+    }
+    .btn-secondary:active { background: #475569; transform: scale(0.96); }
+
+    .btn-danger-sm { 
+      background: #ef4444; color: #fff; border: none; padding: 6px 10px; border-radius: 6px; font-size: 0.75rem; cursor: pointer;
+      transition: background 0.2s ease;
+    }
+    .btn-danger-sm:active { background: #dc2626; }
+
+    .empty-msg { text-align: center; padding: 40px 20px; color: #94a3b8; font-size: 0.9rem; }
+    .loader { text-align: center; padding: 40px 0; color: #006494; font-weight: 500; }
+    .error-msg { text-align: center; padding: 20px; color: #e63946; font-weight: 500; background: #fff5f5; border-radius: 10px; margin: 20px; }
+
+    #toastContainer {
+      position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); z-index: 10000; display: flex; flex-direction: column; gap: 8px; pointer-events: none;
+    }
+    .toast {
+      background: #1b3a4b; color: #fff; padding: 12px 20px; border-radius: 25px; font-size: 0.85rem; font-weight: 500; box-shadow: 0 4px 12px rgba(0,0,0,0.25); opacity: 0; transform: translateY(20px); transition: all 0.3s ease; text-align: center;
+    }
+    .toast.show { opacity: 1; transform: translateY(0); }
+    .toast.success { background: #2a9d8f; }
+    .toast.error { background: #e63946; }
+
+    .admin-modal-content {
+      background: #fff; border-radius: 16px; padding: 20px; width: 85%; max-width: 320px; margin: auto; box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+    }
+
+    .btn-login-cancel {
+      flex: 1; background: #64748b; color: #fff; border: none; padding: 10px; border-radius: 8px; font-size: 0.85rem; cursor: pointer;
+      transition: background 0.2s ease, transform 0.1s ease;
+    }
+    .btn-login-cancel:active { background: #475569; transform: scale(0.96); }
+
+    .btn-login-submit {
+      flex: 1; background: #006494; color: #fff; border: none; padding: 10px; border-radius: 8px; font-size: 0.85rem; font-weight: 700; cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .btn-login-submit:active { background: #003853; transform: scale(0.95); }
+    .btn-login-submit.loading { background: #0284c7; color: #fff; pointer-events: none; }
+  </style>
+</head>
+<body>
+
+  <div class="app-header">
+    <div class="header-title">
+      <h2>🚜 MPA Registro Móvil</h2>
+      <p>Control e Historial de Hallazgos</p>
+    </div>
+    <button class="admin-btn" id="btnAdmin" onclick="toggleAdminMode()">
+      <span id="adminIcon">🔒</span> <span id="adminTxt">Admin</span>
+    </button>
+  </div>
+
+  <div class="semana-badge">
+    <span>📅 Calendario Operativo:</span>
+    <span id="txtSemanaOperativa">Calculando semana...</span>
+  </div>
+
+  <div id="panelDashboardAdmin" style="display: none; padding: 12px 16px 0 16px;">
+    <div class="admin-panel">
+      <div class="admin-title">
+        <div>
+          <span>📊 Panel General Admin</span>
+          <span style="font-size: 0.75rem; color: #2a9d8f; margin-left: 6px;">● Activo</span>
+        </div>
+        <button class="toggle-panel-btn" id="btnTogglePanel" onclick="togglePanelAdminContent()">➖ Minimizar</button>
+      </div>
+      
+      <div id="adminPanelContent">
+        <div class="dash-grid">
+          <div class="dash-card"><div class="num" id="dashTotal">0</div><div class="txt">Total Equipos</div></div>
+          <div class="dash-card" style="border-color: #e63946;"><div class="num" id="dashPend">0</div><div class="txt">Con Pendientes</div></div>
+          <div class="dash-card" style="border-color: #f59e0b;"><div class="num" id="dashEnMPA">0</div><div class="txt">En MPA 🛠️</div></div>
+          <div class="dash-card" style="border-color: #2a9d8f;"><div class="num" id="dashComp">0</div><div class="txt">Completados</div></div>
+        </div>
+
+        <details>
+          <summary>🖼️ Personalizar Foto de Fondo Global</summary>
+          <div style="padding-top: 10px;">
+            <input type="file" id="inputBgFile" accept="image/*" style="font-size: 0.8rem; margin-bottom: 8px;">
+            <div style="display: flex; gap: 8px;">
+              <button class="btn-secondary" id="btnSubirFondo" onclick="subirFotoFondo()">Aplicar para Todos</button>
+              <button class="btn-danger-sm" id="btnQuitarFondo" onclick="quitarFotoFondo()">Quitar Imagen</button>
+            </div>
+          </div>
+        </details>
+
+        <details>
+          <summary>📜 Historial Reciente de Cambios</summary>
+          <div class="historial-list" id="contenedorHistorial">
+            <div style="color: #94a3b8; text-align: center;">Cargando historial...</div>
+          </div>
+        </details>
+      </div>
+    </div>
+  </div>
+
+  <div class="frente-select-box">
+    <select id="selectFrente" onchange="filtrarDatos()">
+      <option value="todos">🌾 Todos los Frentes</option>
+    </select>
+  </div>
+
+  <div class="search-box">
+    <span class="search-icon">🔍</span>
+    <input type="text" id="searchInput" placeholder="Buscar ID (ej: 7-227, 11-41)..." onkeyup="filtrarDatos()">
+  </div>
+
+  <div class="filter-chips">
+    <div class="chip active" onclick="setFiltro('todos', this)">Todos</div>
+    <div class="chip" onclick="setFiltro('enmpa', this)">🛠️ En MPA</div>
+    <div class="chip" onclick="setFiltro('espera', this)">🕔 En Espera</div>
+    <div class="chip" onclick="setFiltro('completado', this)">✔️ Completados</div>
+  </div>
+
+  <div class="cards-container" id="cardsContainer">
+    <div class="loader">Cargando datos del registro...</div>
+  </div>
+
+  <div class="modal-overlay" id="modalOverlay" onclick="cerrarModal(event)">
+    <div class="modal-content" onclick="event.stopPropagation()">
+      <div class="modal-header">
+        <div>
+          <h2 id="modalId" style="font-size: 1.3rem; color: #0f172a;">ID: -</h2>
+          <span id="modalCat" style="font-size: 0.85rem; color: #64748b;">-</span>
+        </div>
+        <button class="close-btn" onclick="cerrarModalDirecto()">&times;</button>
+      </div>
+
+      <div id="vistaLectura">
+        <div class="modal-section">
+          <div class="modal-section-title">Resumen de Fallas</div>
+          <div class="metrics-grid" style="padding: 12px;">
+            <div class="metric-item"><span class="metric-val" id="modalEnc">0</span><span class="metric-lbl">Total</span></div>
+            <div class="metric-item"><span class="metric-val val-success" id="modalRep">0</span><span class="metric-lbl">Reparadas</span></div>
+            <div class="metric-item"><span class="metric-val" id="modalProc">0</span><span class="metric-lbl">En Proceso</span></div>
+            <div class="metric-item"><span class="metric-val val-danger" id="modalEsp">0</span><span class="metric-lbl">Pendientes</span></div>
+          </div>
+        </div>
+
+        <div class="modal-section">
+          <div class="modal-section-title">Descripción de Hallazgos Pendientes</div>
+          <div class="hallazgos-box" id="modalHallazgos">Sin hallazgos pendientes.</div>
+        </div>
+      </div>
+
+      <div id="vistaAdmin" style="display: none;">
+        <input type="hidden" id="editFilaHoja">
+        <input type="hidden" id="editIdMaquinaria">
+        
+        <div class="grid-2">
+          <div class="form-group">
+            <label>Hallazgos Encontrados</label>
+            <input type="number" id="editEnc" oninput="recalcularPendientes()">
+          </div>
+          <div class="form-group">
+            <label>Fallas Reparadas</label>
+            <input type="number" id="editRep" oninput="recalcularPendientes()">
+          </div>
+        </div>
+
+        <div class="grid-2">
+          <div class="form-group">
+            <label>En Proceso</label>
+            <input type="number" id="editProc">
+          </div>
+          <div class="form-group">
+            <label>En Espera (Pendientes)</label>
+            <input type="number" id="editEsp" readonly style="background: #f1f5f9;">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Descripción de Hallazgos Pendientes</label>
+          <div class="hallazgos-dynamic-container">
+            <div id="contenedorHallazgosAdmin"></div>
+            <button type="button" class="btn-add-item" onclick="agregarItemHallazgo('')">➕ Agregar Aviso</button>
+          </div>
+        </div>
+
+        <button class="btn-save" id="btnGuardar" onclick="guardarEdicion()">💾 Guardar Cambios</button>
+        <button class="btn-whatsapp" onclick="compartirWhatsApp()">📲 Compartir en WhatsApp</button>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="modalLoginAdmin" style="justify-content: center; align-items: center;">
+    <div class="admin-modal-content">
+      <h3 style="font-size: 1.1rem; color: #1b3a4b; margin-bottom: 8px; text-align: center;">Acceso Administrador</h3>
+      <p style="font-size: 0.8rem; color: #64748b; margin-bottom: 14px; text-align: center;">Ingresa la clave PIN para continuar</p>
+      
+      <div class="form-group">
+        <input type="password" id="inputPinAdmin" placeholder="PIN de acceso" style="text-align: center; font-size: 1.1rem; letter-spacing: 2px;">
+      </div>
+
+      <div style="display: flex; gap: 8px; margin-top: 12px;">
+        <button class="btn-login-cancel" onclick="cerrarModalLoginAdmin()">Cancelar</button>
+        <button class="btn-login-submit" id="btnLoginSubmit" onclick="procesarLoginAdmin()">Ingresar</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="toastContainer"></div>
+
+  <script>
+    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbyFcZaZ3Ia5raGcWJcMfORu9UlzXq9t_IaKl6CNndrkjIWsUwnSpGxdoTsmcAPzdO7AFg/exec";
+
+    let listaGlobal = [];
+    let filtroActual = 'todos';
+    let esAdmin = false;
+    let pinGuardado = "";
+    let itemSeleccionadoActual = null;
+
+    window.onload = function() {
+      calcularSemanaOperativa();
+      cargarFondoGuardado();
+      verificarSesionAdminGuardada();
+      cargarDatosCacheOFecha();
+    };
+
+    function showToast(mensaje, tipo = 'info') {
+      const container = document.getElementById('toastContainer');
+      const toast = document.createElement('div');
+      toast.className = `toast ${tipo}`;
+      toast.innerText = mensaje;
+      container.appendChild(toast);
+
+      setTimeout(() => toast.classList.add('show'), 10);
+
+      setTimeout(() => {
+        toast.classList.remove('show');
+        setTimeout(() => toast.remove(), 300);
+      }, 3000);
+    }
+
+    function calcularSemanaOperativa() {
+      const hoy = new Date();
+      const baseFecha = new Date(2026, 7, 24); 
+      const difTiempo = hoy.getTime() - baseFecha.getTime();
+      const difSemanas = Math.floor(difTiempo / (1000 * 60 * 60 * 24 * 7));
+      
+      let numSemana = 13 + difSemanas;
+      if (numSemana < 1) numSemana = 1;
+
+      document.getElementById('txtSemanaOperativa').innerText = `Semana Actual: #${numSemana}`;
+    }
+
+    function togglePanelAdminContent() {
+      const content = document.getElementById('adminPanelContent');
+      const btn = document.getElementById('btnTogglePanel');
+      if (content.style.display === 'none') {
+        content.style.display = 'block';
+        btn.innerText = '➖ Minimizar';
+      } else {
+        content.style.display = 'none';
+        btn.innerText = '➕ Maximizar';
+      }
+    }
+
+    function verificarSesionAdminGuardada() {
+      const pinSesion = localStorage.getItem('mpa_admin_pin');
+      if (pinSesion) {
+        esAdmin = true;
+        pinGuardado = pinSesion;
+        activarInterfazAdmin();
+      }
+    }
+
+    function activarInterfazAdmin() {
+      document.getElementById('btnAdmin').classList.add('active');
+      document.getElementById('adminIcon').innerText = '🔓';
+      document.getElementById('adminTxt').innerText = 'Admin Activo';
+      document.getElementById('panelDashboardAdmin').style.display = 'block';
+      actualizarDashboard();
+      cargarHistorial();
+    }
+
+    function cargarDatosCacheOFecha() {
+      const cachedData = localStorage.getItem('mpa_registros_cache');
+      if (cachedData) {
+        try {
+          const parsed = JSON.parse(cachedData);
+          renderizarLista(parsed);
+        } catch(e) { console.error("Error al leer caché", e); }
+      }
+      cargarDatos();
+    }
+
+    function cargarDatos() {
+      fetch(`${WEB_APP_URL}?action=getDatosRegistro`)
+        .then(res => res.json())
+        .then(datos => {
+          const filtradosLimpios = (datos || []).filter(item => 
+            !item.categoria.toUpperCase().includes("TANQUE DE AGUA 500 GLS") &&
+            !item.id.toUpperCase().includes("TANQUE DE AGUA")
+          );
+
+          localStorage.setItem('mpa_registros_cache', JSON.stringify(filtradosLimpios));
+          renderizarLista(filtradosLimpios);
+        })
+        .catch(err => {
+          if (listaGlobal.length === 0) mostrarError(err);
+        });
+    }
+
+    function mostrarError(error) {
+      const container = document.getElementById('cardsContainer');
+      container.innerHTML = `<div class="error-msg">⚠️ Error al cargar datos:<br>${error.message || error}</div>`;
+    }
+
+    function renderizarLista(datos) {
+      listaGlobal = datos || [];
+      procesarTiemposLocales(listaGlobal);
+      poblarSelectorFrentes();
+      filtrarDatos();
+      if (esAdmin) actualizarDashboard();
+    }
+
+    // Gestiona los días transcurridos desde hallazgos y entrada a MPA sin editar Google Sheets
+    function procesarTiemposLocales(lista) {
+      let tracker = JSON.parse(localStorage.getItem('mpa_tiempos_tracker') || '{}');
+      const ahora = new Date().getTime();
+
+      lista.forEach(item => {
+        if (!tracker[item.id]) {
+          tracker[item.id] = { fechaHallazgos: null, fechaMpa: null, ultimosPendientes: 0 };
+        }
+
+        let record = tracker[item.id];
+        let numPendientes = Number(item.enEspera) || 0;
+
+        // Rastreo de Hallazgos
+        if (numPendientes > 0) {
+          if (!record.fechaHallazgos || record.ultimosPendientes !== numPendientes) {
+            record.fechaHallazgos = ahora;
+          }
+        } else {
+          record.fechaHallazgos = null;
+        }
+        record.ultimosPendientes = numPendientes;
+
+        // Rastreo de Entrada a MPA
+        if (item.estado.includes('EN MPA')) {
+          if (!record.fechaMpa) {
+            record.fechaMpa = ahora;
+          }
+        } else {
+          record.fechaMpa = null;
+        }
+
+        // Cálculo de días
+        if (record.fechaHallazgos) {
+          item.diasFalla = Math.floor((ahora - record.fechaHallazgos) / (1000 * 60 * 60 * 24));
+        } else {
+          item.diasFalla = 0;
+        }
+
+        if (record.fechaMpa) {
+          item.diasMpa = Math.floor((ahora - record.fechaMpa) / (1000 * 60 * 60 * 24));
+        } else {
+          item.diasMpa = 0;
+        }
+      });
+
+      localStorage.setItem('mpa_tiempos_tracker', JSON.stringify(tracker));
+    }
+
+    function poblarSelectorFrentes() {
+      const select = document.getElementById('selectFrente');
+      const valorSeleccionado = select.value;
+      
+      const frentesSet = new Set();
+      listaGlobal.forEach(i => {
+        if (i.frente && i.frente.trim() !== '') {
+          frentesSet.add(i.frente.trim());
+        }
+      });
+
+      const frentesOrdenados = Array.from(frentesSet).sort();
+      let optionsHtml = '<option value="todos">🌾 Todos los Frentes</option>';
+      frentesOrdenados.forEach(f => {
+        optionsHtml += `<option value="${f}">${f}</option>`;
+      });
+      select.innerHTML = optionsHtml;
+      
+      if (frentesSet.has(valorSeleccionado)) {
+        select.value = valorSeleccionado;
+      }
+    }
+
+    function setFiltro(tipo, el) {
+      document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+      el.classList.add('active');
+      filtroActual = tipo;
+      filtrarDatos();
+    }
+
+    function toggleAdminMode() {
+      if (!esAdmin) {
+        document.getElementById('inputPinAdmin').value = '';
+        document.getElementById('modalLoginAdmin').classList.add('active');
+      } else {
+        esAdmin = false;
+        pinGuardado = "";
+        localStorage.removeItem('mpa_admin_pin');
+        document.getElementById('btnAdmin').classList.remove('active');
+        document.getElementById('adminIcon').innerText = '🔒';
+        document.getElementById('adminTxt').innerText = 'Admin';
+        document.getElementById('panelDashboardAdmin').style.display = 'none';
+        showToast("Modo Administrador Desactivado.");
+      }
+    }
+
+    function cerrarModalLoginAdmin() {
+      document.getElementById('modalLoginAdmin').classList.remove('active');
+    }
+
+    function procesarLoginAdmin() {
+      const pin = document.getElementById('inputPinAdmin').value;
+      const btn = document.getElementById('btnLoginSubmit');
+
+      if (!pin) {
+        showToast("Ingresa un PIN válido", "error");
+        return;
+      }
+
+      btn.classList.add('loading');
+      btn.innerText = 'Iniciando...';
+
+      fetch(`${WEB_APP_URL}?action=verificarPin&pin=${encodeURIComponent(pin)}`)
+        .then(res => res.json())
+        .then(esCorrecto => {
+          btn.classList.remove('loading');
+          btn.innerText = 'Ingresar';
+
+          if (esCorrecto) {
+            esAdmin = true;
+            pinGuardado = pin;
+            localStorage.setItem('mpa_admin_pin', pin);
+            cerrarModalLoginAdmin();
+            activarInterfazAdmin();
+            showToast("Modo Administrador Activado", "success");
+          } else {
+            showToast("PIN Incorrecto", "error");
+          }
+        })
+        .catch(err => {
+          btn.classList.remove('loading');
+          btn.innerText = 'Ingresar';
+          showToast("Error al verificar PIN: " + err.message, "error");
+        });
+    }
+
+    function actualizarDashboard() {
+      let total = listaGlobal.length;
+      let conPend = 0;
+      let enMpa = 0;
+      let comp = 0;
+
+      listaGlobal.forEach(i => {
+        if (i.enEspera > 0) conPend++;
+        if (i.estado.includes('EN MPA')) enMpa++;
+        if (i.estado.includes('COMPLETADO')) comp++;
+      });
+
+      document.getElementById('dashTotal').innerText = total;
+      document.getElementById('dashPend').innerText = conPend;
+      document.getElementById('dashEnMPA').innerText = enMpa;
+      document.getElementById('dashComp').innerText = comp;
+    }
+
+    function cargarHistorial() {
+      fetch(`${WEB_APP_URL}?action=getHistorialMovimientos`)
+        .then(res => res.json())
+        .then(lista => {
+          const cont = document.getElementById('contenedorHistorial');
+          if (!lista || lista.length === 0) {
+            cont.innerHTML = '<div style="color: #94a3b8; text-align: center;">Sin movimientos registrados.</div>';
+            return;
+          }
+          let html = '';
+          lista.forEach(h => {
+            html += `<div class="historial-item"><b>${h.fecha}</b> - [${h.id}]: ${h.accion}</div>`;
+          });
+          cont.innerHTML = html;
+        })
+        .catch(() => {
+          document.getElementById('contenedorHistorial').innerHTML = '<div style="color: #ef4444; text-align: center;">Error al cargar historial</div>';
+        });
+    }
+
+    function subirFotoFondo() {
+      const fileInput = document.getElementById('inputBgFile');
+      if (!fileInput.files || !fileInput.files[0]) {
+        showToast("Selecciona una imagen primero", "error");
+        return;
+      }
+
+      const btn = document.getElementById('btnSubirFondo');
+      btn.innerText = 'Subiendo...';
+      btn.disabled = true;
+
+      const file = fileInput.files[0];
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        const base64 = e.target.result;
+        
+        fetch(WEB_APP_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+          body: JSON.stringify({ action: 'guardarImagenFondo', bg: base64, pin: pinGuardado })
+        })
+        .then(res => res.json())
+        .then(res => {
+          btn.innerText = 'Aplicar para Todos';
+          btn.disabled = false;
+          if (res.exito || res.status === 'success') {
+            document.body.style.backgroundImage = `url('${base64}')`;
+            localStorage.setItem('mpa_bg_image', base64);
+            showToast("Imagen de fondo sincronizada en todos los dispositivos", "success");
+          } else {
+            showToast(res.mensaje || "Error al sincronizar fondo", "error");
+          }
+        })
+        .catch(err => {
+          btn.innerText = 'Aplicar para Todos';
+          btn.disabled = false;
+          showToast("Error de conexión al subir la imagen", "error");
+        });
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function quitarFotoFondo() {
+      const btn = document.getElementById('btnQuitarFondo');
+      btn.innerText = 'Quitando...';
+      btn.disabled = true;
+
+      fetch(WEB_APP_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+        body: JSON.stringify({ action: 'guardarImagenFondo', bg: '', pin: pinGuardado })
+      })
+      .then(res => res.json())
+      .then(res => {
+        btn.innerText = 'Quitar Imagen';
+        btn.disabled = false;
+        document.body.style.backgroundImage = 'none';
+        localStorage.removeItem('mpa_bg_image');
+        showToast("Fondo eliminado para todos los dispositivos", "info");
+      })
+      .catch(() => {
+        btn.innerText = 'Quitar Imagen';
+        btn.disabled = false;
+        showToast("Error al quitar el fondo", "error");
+      });
+    }
+
+    function cargarFondoGuardado() {
+      const localBg = localStorage.getItem('mpa_bg_image');
+      if (localBg) {
+        document.body.style.backgroundImage = `url('${localBg}')`;
+      }
+
+      fetch(`${WEB_APP_URL}?action=getImagenFondo`)
+        .then(res => res.json())
+        .then(bg => {
+          if (bg && bg.trim() !== '') {
+            document.body.style.backgroundImage = `url('${bg}')`;
+            localStorage.setItem('mpa_bg_image', bg);
+          } else {
+            document.body.style.backgroundImage = 'none';
+            localStorage.removeItem('mpa_bg_image');
+          }
+        }).catch(err => console.log("Sin foto de fondo externa."));
+    }
+
+    function filtrarDatos() {
+      const q = document.getElementById('searchInput').value.toLowerCase().trim();
+      const frenteSel = document.getElementById('selectFrente').value;
+      const container = document.getElementById('cardsContainer');
+      container.innerHTML = '';
+
+      const filtrados = listaGlobal.filter(item => {
+        const coincideBusqueda = item.id.toLowerCase().includes(q) || 
+                                 item.categoria.toLowerCase().includes(q) || 
+                                 item.hallazgosPend.toLowerCase().includes(q);
+        
+        let coincideFiltro = true;
+        if (filtroActual === 'enmpa') coincideFiltro = item.estado.includes('EN MPA');
+        else if (filtroActual === 'espera') coincideFiltro = item.estado.includes('ESPERA');
+        else if (filtroActual === 'completado') coincideFiltro = item.estado.includes('COMPLETADO');
+
+        let coincideFrente = true;
+        if (frenteSel !== 'todos') {
+          coincideFrente = item.frente && item.frente.trim() === frenteSel;
+        }
+
+        return coincideBusqueda && coincideFiltro && coincideFrente;
+      });
+
+      if (filtrados.length === 0) {
+        container.innerHTML = '<div class="empty-msg">No se encontraron registros.</div>';
+        return;
+      }
+
+      filtrados.forEach((item) => {
+        let cardClass = 'card';
+        if (item.estado.includes('EN MPA')) cardClass += ' in-mpa';
+        else if (item.enEspera > 0) cardClass += ' has-pending';
+        else if (item.estado.includes('COMPLETADO')) cardClass += ' completed';
+
+        const card = document.createElement('div');
+        card.className = cardClass;
+        card.onclick = () => abrirModal(item);
+
+        let tiempoHtml = '';
+        if (item.enEspera > 0) {
+          tiempoHtml += `<span class="time-pill">⏱️ ${item.diasFalla}d con hallazgos</span>`;
+          if (item.diasFalla >= 3) {
+            tiempoHtml += `<span class="time-pill alert-pill">⚠️ >3 días sin reparar</span>`;
+          }
+        }
+        if (item.estado.includes('EN MPA')) {
+          tiempoHtml += `<span class="time-pill">🛠️ ${item.diasMpa}d en MPA</span>`;
+        }
+
+        card.innerHTML = `
+          <div class="card-header">
+            <span class="card-id">🚜 ${item.id}</span>
+            <span class="card-badge">${item.estado}</span>
+          </div>
+          <div class="card-category">${item.categoria} ${item.frente ? '• ' + item.frente : ''}</div>
+          <div class="metrics-grid">
+            <div class="metric-item"><span class="metric-val">${item.fallasEnc}</span><span class="metric-lbl">Hallazgos</span></div>
+            <div class="metric-item"><span class="metric-val val-success">${item.fallasRep}</span><span class="metric-lbl">Reparadas</span></div>
+            <div class="metric-item"><span class="metric-val val-danger">${item.enEspera}</span><span class="metric-lbl">Pendientes</span></div>
+            <div class="metric-item"><span class="metric-val" style="color:#006494;">${item.avance}</span><span class="metric-lbl">Avance</span></div>
+          </div>
+          ${tiempoHtml ? `<div class="time-tracker-badge">${tiempoHtml}</div>` : ''}
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    function abrirModal(item) {
+      itemSeleccionadoActual = item;
+      document.getElementById('modalId').innerText = 'ID: ' + item.id;
+      document.getElementById('modalCat').innerText = item.categoria + (item.frente ? ' (' + item.frente + ')' : '');
+
+      if (esAdmin) {
+        document.getElementById('vistaLectura').style.display = 'none';
+        document.getElementById('vistaAdmin').style.display = 'block';
+
+        document.getElementById('editFilaHoja').value = item.filaHoja;
+        document.getElementById('editIdMaquinaria').value = item.id;
+        document.getElementById('editEnc').value = item.fallasEnc;
+        document.getElementById('editRep').value = item.fallasRep;
+        document.getElementById('editProc').value = item.enProceso;
+        document.getElementById('editEsp').value = item.enEspera;
+        
+        cargarHallazgosAdminDinamico(item.hallazgosPend);
+      } else {
+        document.getElementById('vistaAdmin').style.display = 'none';
+        document.getElementById('vistaLectura').style.display = 'block';
+
+        document.getElementById('modalEnc').innerText = item.fallasEnc;
+        document.getElementById('modalRep').innerText = item.fallasRep;
+        document.getElementById('modalProc').innerText = item.enProceso;
+        document.getElementById('modalEsp').innerText = item.enEspera;
+
+        const hallazgosBox = document.getElementById('modalHallazgos');
+        if (item.hallazgosPend && item.hallazgosPend.trim() !== '') {
+          hallazgosBox.innerText = item.hallazgosPend;
+          hallazgosBox.style.background = '#fff5f5';
+          hallazgosBox.style.color = '#9b2c2c';
+        } else {
+          hallazgosBox.innerText = '✔️ Sin hallazgos pendientes registrados.';
+          hallazgosBox.style.background = '#f0fdf4';
+          hallazgosBox.style.color = '#166534';
+        }
+      }
+
+      document.getElementById('modalOverlay').classList.add('active');
+    }
+
+    function cargarHallazgosAdminDinamico(textoOriginal) {
+      const container = document.getElementById('contenedorHallazgosAdmin');
+      container.innerHTML = '';
+
+      if (!textoOriginal || textoOriginal.trim() === '') {
+        agregarItemHallazgo('');
+        return;
+      }
+
+      const lineas = textoOriginal.split('\n');
+      let itemsAgregados = 0;
+
+      lineas.forEach(linea => {
+        const textoLimpio = linea.replace(/^\d+[\.\)]\s*/, '').trim();
+        if (textoLimpio !== '') {
+          agregarItemHallazgo(textoLimpio);
+          itemsAgregados++;
+        }
+      });
+
+      if (itemsAgregados === 0) {
+        agregarItemHallazgo('');
+      }
+    }
+
+    function agregarItemHallazgo(valor = '') {
+      const container = document.getElementById('contenedorHallazgosAdmin');
+      const row = document.createElement('div');
+      row.className = 'hallazgo-item-row';
+      
+      row.innerHTML = `
+        <span class="num-lbl">1.</span>
+        <input type="text" value="${valor.replace(/"/g, '&quot;')}" placeholder="Escribe el aviso u observación...">
+        <button type="button" class="btn-del-item" onclick="eliminarItemHallazgo(this)">🗑️</button>
+      `;
+
+      container.appendChild(row);
+      reordenarNumerosHallazgos();
+    }
+
+    function eliminarItemHallazgo(btn) {
+      const row = btn.closest('.hallazgo-item-row');
+      row.remove();
+      reordenarNumerosHallazgos();
+    }
+
+    function reordenarNumerosHallazgos() {
+      const rows = document.querySelectorAll('#contenedorHallazgosAdmin .hallazgo-item-row');
+      rows.forEach((row, idx) => {
+        const lbl = row.querySelector('.num-lbl');
+        if (lbl) lbl.innerText = `${idx + 1}.`;
+      });
+    }
+
+    function obtenerTextoHallazgosFormateado() {
+      const inputs = document.querySelectorAll('#contenedorHallazgosAdmin .hallazgo-item-row input');
+      const avisos = [];
+
+      inputs.forEach(inp => {
+        const txt = inp.value.trim();
+        if (txt !== '') {
+          avisos.push(txt);
+        }
+      });
+
+      if (avisos.length === 0) return '';
+      
+      return avisos.map((aviso, idx) => `${idx + 1}. ${aviso}`).join('\n');
+    }
+
+    function recalcularPendientes() {
+      const enc = Number(document.getElementById('editEnc').value) || 0;
+      const rep = Number(document.getElementById('editRep').value) || 0;
+      const esp = Math.max(0, enc - rep);
+      document.getElementById('editEsp').value = esp;
+    }
+
+    function guardarEdicion() {
+      const btn = document.getElementById('btnGuardar');
+      btn.disabled = true;
+      btn.innerText = '⏳ Guardando...';
+
+      const hallazgosFormateados = obtenerTextoHallazgosFormateado();
+
+      const datosAdmin = {
+        action: 'actualizarHallazgos',
+        pin: pinGuardado,
+        filaHoja: document.getElementById('editFilaHoja').value,
+        idMaquinaria: document.getElementById('editIdMaquinaria').value,
+        fallasEnc: document.getElementById('editEnc').value,
+        fallasRep: document.getElementById('editRep').value,
+        enProceso: document.getElementById('editProc').value,
+        enEspera: document.getElementById('editEsp').value,
+        hallazgosPend: hallazgosFormateados
+      };
+
+      fetch(WEB_APP_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+        body: JSON.stringify(datosAdmin)
+      })
+      .then(res => res.json())
+      .then(res => {
+        btn.disabled = false;
+        btn.innerText = '💾 Guardar Cambios';
+        showToast(res.mensaje || "Cambios guardados con éxito", res.exito ? "success" : "error");
+        if (res.exito) {
+          cerrarModalDirecto();
+          cargarDatos();
+        }
+      })
+      .catch(err => {
+        btn.disabled = false;
+        btn.innerText = '💾 Guardar Cambios';
+        showToast("Error al guardar: " + err.message, "error");
+      });
+    }
+
+    function compartirWhatsApp() {
+      if (!itemSeleccionadoActual) return;
+
+      const hoy = new Date();
+      const fechaFormateada = hoy.toLocaleDateString('es-ES', {
+        day: '2-digit', month: '2-digit', year: 'numeric'
+      });
+
+      const enc = Number(document.getElementById('editEnc').value) || 0;
+      const rep = Number(document.getElementById('editRep').value) || 0;
+      const esp = Number(document.getElementById('editEsp').value) || 0;
+      const idMaquina = itemSeleccionadoActual.id;
+      const estado = itemSeleccionadoActual.estado || 'N/A';
+      
+      const avancePorcentaje = enc > 0 ? Math.round((rep / enc) * 100) : 100;
+      const hallazgosTxt = obtenerTextoHallazgosFormateado() || 'Sin hallazgos pendientes.';
+
+      const mensaje = `📌 *ESTADO DE MAQUINARIA - MPA*
+📅 *Fecha:* ${fechaFormateada}
+🚜 *ID Máquina:* ${idMaquina}
+
+🔍 *Hallazgos Encontrados:* ${enc}
+✅ *Hallazgos Reparados:* ${rep}
+⏳ *Hallazgos en Espera:* ${esp}
+📊 *Estado:* ${estado}
+📈 *Avance:* ${avancePorcentaje}% (Reparadas: ${rep}/${enc})
+
+📋 *Descripción de Hallazgos Pendientes:*
+${hallazgosTxt}`;
+
+      const url = `https://api.whatsapp.com/send?text=${encodeURIComponent(mensaje)}`;
+      window.open(url, '_blank');
+    }
+
+    function cerrarModal(e) {
+      if (e.target.id === 'modalOverlay') cerrarModalDirecto();
+    }
+
+    function cerrarModalDirecto() {
+      document.getElementById('modalOverlay').classList.remove('active');
+    }
+  </script>
+</body>
+</html>
