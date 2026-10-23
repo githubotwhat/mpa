@@ -885,7 +885,7 @@
   };
 
   try {
-    // Usamos no-cors para evitar que el navegador bloquee la respuesta de Google
+    // Al usar no-cors, la petición se envía con éxito a Google sin bloquear el navegador
     await fetch(WEB_APP_URL, {
       method: 'POST',
       mode: 'no-cors',
@@ -895,11 +895,14 @@
 
     btn.disabled = false;
     btn.innerText = '💾 Guardar Cambios';
-    showToast("Cambios guardados con éxito", "success");
+    showToast("Cambios enviados a Google Sheets", "success");
     cerrarModalDirecto();
-    
-    // Esperamos 1 segundo para que Google Sheets procese y recargamos datos
-    setTimeout(() => { cargarDatos(); }, 1500);
+
+    // Damos un pequeño respiro para que Google Sheets procese y recargamos los datos
+    setTimeout(() => {
+      cargarDatos();
+      cargarHistorial();
+    }, 1500);
 
   } catch (err) {
     btn.disabled = false;
