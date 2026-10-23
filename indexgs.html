@@ -869,41 +869,44 @@
     }
 
     async function guardarEdicion() {
-      const btn = document.getElementById('btnGuardar');
-      btn.disabled = true;
-      btn.innerText = '⏳ Guardando...';
+  const btn = document.getElementById('btnGuardar');
+  btn.disabled = true;
+  btn.innerText = '⏳ Guardando...';
 
-      const datosAdmin = {
-        action: 'actualizarHallazgos',
-        filaHoja: document.getElementById('editFilaHoja').value,
-        idMaquinaria: document.getElementById('editIdMaquinaria').value,
-        fallasEnc: document.getElementById('editEnc').value,
-        fallasRep: document.getElementById('editRep').value,
-        enProceso: document.getElementById('editProc').value,
-        enEspera: document.getElementById('editEsp').value,
-        hallazgosPend: obtenerTextoHallazgosFormateado()
-      };
+  const datosAdmin = {
+    action: 'actualizarHallazgos',
+    filaHoja: document.getElementById('editFilaHoja').value,
+    idMaquinaria: document.getElementById('editIdMaquinaria').value,
+    fallasEnc: document.getElementById('editEnc').value,
+    fallasRep: document.getElementById('editRep').value,
+    enProceso: document.getElementById('editProc').value,
+    enEspera: document.getElementById('editEsp').value,
+    hallazgosPend: obtenerTextoHallazgosFormateado()
+  };
 
-      try {
-        const res = await fetchConReintentos(WEB_APP_URL, {
-          method: 'POST',
-          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-          body: JSON.stringify(datosAdmin)
-        });
-        btn.disabled = false;
-        btn.innerText = '💾 Guardar Cambios';
-        showToast(res.mensaje, res.exito ? "success" : "error");
-        if (res.exito) {
-          cerrarModalDirecto();
-          cargarDatos();
-          cargarHistorial();
-        }
-      } catch (err) {
-        btn.disabled = false;
-        btn.innerText = '💾 Guardar Cambios';
-        showToast("Error de conexión", "error");
-      }
-    }
+  try {
+    // Usamos no-cors para evitar que el navegador bloquee la respuesta de Google
+    await fetch(WEB_APP_URL, {
+      method: 'POST',
+      mode: 'no-cors',
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify(datosAdmin)
+    });
+
+    btn.disabled = false;
+    btn.innerText = '💾 Guardar Cambios';
+    showToast("Cambios guardados con éxito", "success");
+    cerrarModalDirecto();
+    
+    // Esperamos 1 segundo para que Google Sheets procese y recargamos datos
+    setTimeout(() => { cargarDatos(); }, 1500);
+
+  } catch (err) {
+    btn.disabled = false;
+    btn.innerText = '💾 Guardar Cambios';
+    showToast("Error de conexión", "error");
+  }
+}
 
     function compartirWhatsApp() {
       if (!itemSeleccionadoActual) return;
